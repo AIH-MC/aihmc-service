@@ -1,0 +1,529 @@
+[
+  {
+    "case": "root",
+    "method": "GET",
+    "path": "/",
+    "status": 200,
+    "content_type": "application/json; charset=utf-8",
+    "body": {
+      "message": "This is AI Hobbyist MC API, please use the correct endpoint to access the API."
+    }
+  },
+  {
+    "case": "root_post",
+    "method": "POST",
+    "path": "/",
+    "status": 200,
+    "content_type": "application/json; charset=utf-8",
+    "body": {
+      "message": "This is AI Hobbyist MC API, please use the correct endpoint to access the API."
+    }
+  },
+  {
+    "case": "metadata",
+    "method": "GET",
+    "path": "/mcauth",
+    "status": 200,
+    "content_type": "application/json; charset=utf-8",
+    "body": {
+      "meta": {
+        "serverName": "AI Hobbyist",
+        "implementationName": "aih-minecraft-auth",
+        "implementationVersion": "6.0.0.0",
+        "links": {
+          "homepage": "https://www.ai-hobbyist.com",
+          "register": "https://u.ai-hobbyist.com"
+        },
+        "feature.non_email_login": true
+      },
+      "skinDomains": [
+        ".example.com"
+      ],
+      "signaturePublickey": "<ephemeral test public key>"
+    }
+  },
+  {
+    "case": "metadata_wrong_method",
+    "method": "POST",
+    "path": "/mcauth",
+    "status": 405,
+    "content_type": "application/json; charset=utf-8",
+    "body": {
+      "error": "HTTP/1.1 405 Method Not Allowed",
+      "errorMessage": "不支持的请求方法"
+    }
+  },
+  {
+    "case": "unknown",
+    "method": "GET",
+    "path": "/unknown",
+    "status": 200,
+    "content_type": "application/json;charset=utf8",
+    "body": {
+      "meta": {
+        "serverName": "AI Hobbyist",
+        "implementationName": "aih-minecraft-auth",
+        "implementationVersion": "6.0.0.0",
+        "links": {
+          "homepage": "https://www.ai-hobbyist.com",
+          "register": "https://u.ai-hobbyist.com"
+        },
+        "feature.non_email_login": true
+      },
+      "skinDomains": [
+        ".example.com"
+      ],
+      "signaturePublickey": "<ephemeral test public key>"
+    }
+  },
+  {
+    "case": "metadata_query",
+    "method": "GET",
+    "path": "/mcauth?x=1",
+    "status": 200,
+    "content_type": "application/json;charset=utf8",
+    "body": {
+      "meta": {
+        "serverName": "AI Hobbyist",
+        "implementationName": "aih-minecraft-auth",
+        "implementationVersion": "6.0.0.0",
+        "links": {
+          "homepage": "https://www.ai-hobbyist.com",
+          "register": "https://u.ai-hobbyist.com"
+        },
+        "feature.non_email_login": true
+      },
+      "skinDomains": [
+        ".example.com"
+      ],
+      "signaturePublickey": "<ephemeral test public key>"
+    }
+  },
+  {
+    "case": "invalid_token",
+    "method": "POST",
+    "path": "/mcauth/authserver/validate",
+    "status": 403,
+    "content_type": "application/json; charset=utf-8",
+    "body": {
+      "error": "ForbiddenOperationException",
+      "errorMessage": "Invalid token."
+    }
+  },
+  {
+    "case": "valid_token",
+    "method": "POST",
+    "path": "/mcauth/authserver/validate",
+    "status": 204,
+    "content_type": "application/json; charset=utf-8",
+    "body": null
+  },
+  {
+    "case": "profile_signed",
+    "method": "GET",
+    "path": "/mcauth/sessionserver/session/minecraft/profile/11111111111141118111111111111111",
+    "status": 200,
+    "content_type": "application/json; charset=utf-8",
+    "body": {
+      "id": "11111111111141118111111111111111",
+      "name": "MigrationPlayer",
+      "properties": [
+        {
+          "name": "textures",
+          "value": "e30=",
+          "signature": "<verified presence; ephemeral key>"
+        }
+      ]
+    }
+  },
+  {
+    "case": "profile_false",
+    "method": "GET",
+    "path": "/mcauth/sessionserver/session/minecraft/profile/11111111111141118111111111111111?unsigned=false",
+    "status": 200,
+    "content_type": "application/json; charset=utf-8",
+    "body": {
+      "id": "11111111111141118111111111111111",
+      "name": "MigrationPlayer",
+      "properties": [
+        {
+          "name": "textures",
+          "value": "e30="
+        }
+      ]
+    }
+  },
+  {
+    "case": "profile_zero",
+    "method": "GET",
+    "path": "/mcauth/sessionserver/session/minecraft/profile/11111111111141118111111111111111?unsigned=0",
+    "status": 200,
+    "content_type": "application/json; charset=utf-8",
+    "body": {
+      "id": "11111111111141118111111111111111",
+      "name": "MigrationPlayer",
+      "properties": [
+        {
+          "name": "textures",
+          "value": "e30=",
+          "signature": "<verified presence; ephemeral key>"
+        }
+      ]
+    }
+  },
+  {
+    "case": "profile_missing",
+    "method": "GET",
+    "path": "/mcauth/sessionserver/session/minecraft/profile/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "status": 204,
+    "content_type": "application/json; charset=utf-8",
+    "body": null
+  },
+  {
+    "case": "name",
+    "method": "GET",
+    "path": "/mcauth/users/profiles/minecraft/MigrationPlayer",
+    "status": 200,
+    "content_type": "application/json; charset=utf-8",
+    "body": {
+      "id": "11111111111141118111111111111111",
+      "name": "MigrationPlayer"
+    }
+  },
+  {
+    "case": "name_alias",
+    "method": "GET",
+    "path": "/mcauth/api/users/profiles/minecraft/MigrationPlayer",
+    "status": 200,
+    "content_type": "application/json; charset=utf-8",
+    "body": {
+      "id": "11111111111141118111111111111111",
+      "name": "MigrationPlayer"
+    }
+  },
+  {
+    "case": "name_missing",
+    "method": "GET",
+    "path": "/mcauth/users/profiles/minecraft/UnknownMigrationPlayer",
+    "status": 404,
+    "content_type": "application/json; charset=utf-8",
+    "body": {
+      "error": "UserNotFound",
+      "errorMessage": "The requested user UnknownMigrationPlayer could not be found"
+    }
+  },
+  {
+    "case": "profiles",
+    "method": "POST",
+    "path": "/mcauth/api/profiles/minecraft",
+    "status": 200,
+    "content_type": "application/json; charset=utf-8",
+    "body": [
+      {
+        "id": "11111111111141118111111111111111",
+        "name": "MigrationPlayer"
+      }
+    ]
+  },
+  {
+    "case": "join",
+    "method": "POST",
+    "path": "/mcauth/sessionserver/session/minecraft/join",
+    "status": 204,
+    "content_type": "application/json; charset=utf-8",
+    "body": null
+  },
+  {
+    "case": "hasJoined",
+    "method": "GET",
+    "path": "/mcauth/sessionserver/session/minecraft/hasJoined?username=MigrationPlayer&serverId=migration-baseline-server&ip=203.0.113.99",
+    "status": 200,
+    "content_type": "application/json; charset=utf-8",
+    "body": {
+      "id": "11111111111141118111111111111111",
+      "name": "MigrationPlayer",
+      "properties": [
+        {
+          "name": "textures",
+          "value": "e30=",
+          "signature": "<verified presence; ephemeral key>"
+        }
+      ]
+    }
+  },
+  {
+    "case": "hasJoined_missing",
+    "method": "GET",
+    "path": "/mcauth/sessionserver/session/minecraft/hasJoined?username=MigrationPlayer&serverId=missing",
+    "status": 204,
+    "content_type": "application/json; charset=utf-8",
+    "body": null
+  },
+  {
+    "case": "invalid_refresh",
+    "method": "POST",
+    "path": "/mcauth/authserver/refresh",
+    "status": 403,
+    "content_type": "application/json; charset=utf-8",
+    "body": {
+      "error": "ForbiddenOperationException",
+      "errorMessage": "Invalid token."
+    }
+  },
+  {
+    "case": "invalid_invalidate",
+    "method": "POST",
+    "path": "/mcauth/authserver/invalidate",
+    "status": 204,
+    "content_type": "application/json; charset=utf-8",
+    "body": null
+  },
+  {
+    "case": "delete_denied",
+    "method": "POST",
+    "path": "/system/deluser",
+    "status": 403,
+    "content_type": "application/json; charset=utf-8",
+    "body": {
+      "msg": "超级操作密钥错误"
+    }
+  },
+  {
+    "case": "delete_empty",
+    "method": "POST",
+    "path": "/system/deluser",
+    "status": 400,
+    "content_type": "application/json; charset=utf-8",
+    "body": {
+      "msg": "超级操作密钥或用户UID不能为空"
+    }
+  },
+  {
+    "case": "login_rejected",
+    "method": "POST",
+    "path": "/mcauth/authserver/authenticate",
+    "status": 403,
+    "body": {
+      "error": "ForbiddenOperationException",
+      "errorMessage": "Invalid credentials. Invalid username or password."
+    }
+  },
+  {
+    "case": "login_new",
+    "method": "POST",
+    "path": "/mcauth/authserver/authenticate",
+    "status": 200,
+    "body": {
+      "accessToken": "NmFlYWUxMjdiMDBjOTBhMmQ1NGFjMDhlNTUwOTNlNjZkY2VmMjc0ZjlmMjI0NzRkMjVhNjJmMmI5YjgzYmYzOA==",
+      "clientToken": "fixture-client-token",
+      "availableProfiles": [
+        {
+          "id": "4c4493446ff0492caefc69622f662b72",
+          "name": "MigrationNew"
+        }
+      ],
+      "selectedProfile": {
+        "id": "4c4493446ff0492caefc69622f662b72",
+        "name": "MigrationNew"
+      },
+      "user": {
+        "id": "7b4e2b540302e8deabe7dcbfa8704150",
+        "properties": []
+      }
+    }
+  },
+  {
+    "case": "login_repeat",
+    "method": "POST",
+    "path": "/mcauth/authserver/authenticate",
+    "status": 200,
+    "body": {
+      "accessToken": "NmFlYWUxMjdiMDBjOTBhMmQ1NGFjMDhlNTUwOTNlNjZkY2VmMjc0ZjlmMjI0NzRkMjVhNjJmMmI5YjgzYmYzOA==",
+      "clientToken": "fixture-client-token",
+      "availableProfiles": [
+        {
+          "id": "4c4493446ff0492caefc69622f662b72",
+          "name": "MigrationNew"
+        }
+      ],
+      "selectedProfile": {
+        "id": "4c4493446ff0492caefc69622f662b72",
+        "name": "MigrationNew"
+      },
+      "user": {
+        "id": "7b4e2b540302e8deabe7dcbfa8704150",
+        "properties": []
+      }
+    }
+  },
+  {
+    "case": "profile_after_repeat",
+    "method": "GET",
+    "path": "/mcauth/sessionserver/session/minecraft/profile/4c4493446ff0492caefc69622f662b72?unsigned=true",
+    "status": 200,
+    "body": {
+      "id": "4c4493446ff0492caefc69622f662b72",
+      "name": "MigrationNew",
+      "properties": [
+        {
+          "name": "textures",
+          "value": "ewogICAgInRpbWVzdGFtcCI6IDE3OTI2NzU4MjAsCiAgICAicHJvZmlsZUlkIjogIjRjNDQ5MzQ0NmZmMDQ5MmNhZWZjNjk2MjJmNjYyYjcyIiwKICAgICJwcm9maWxlTmFtZSI6ICJNaWdyYXRpb25OZXciLAogICAgInRleHR1cmVzIjogewogICAgICAgICJTS0lOIjogewogICAgICAgICAgICAidXJsIjogImh0dHBzOlwvXC9hcGkuYWlobWMudG9wXC90ZXh0dXJlc1wvZml4dHVyZS1za2luIiwKICAgICAgICAgICAgIm1ldGFkYXRhIjogewogICAgICAgICAgICAgICAgIm1vZGVsIjogImRlZmF1bHQiCiAgICAgICAgICAgIH0KICAgICAgICB9LAogICAgICAgICJDQVBFIjogewogICAgICAgICAgICAidXJsIjogImh0dHBzOlwvXC9hcGkuYWlobWMudG9wXC90ZXh0dXJlc1wvZml4dHVyZS1jYXBlIgogICAgICAgIH0KICAgIH0KfQ=="
+        }
+      ]
+    }
+  },
+  {
+    "case": "avatar_local",
+    "method": "GET",
+    "path": "/helm/4c4493446ff0492caefc69622f662b72/20",
+    "status": 200,
+    "body": {
+      "png_dimensions": [
+        20,
+        20
+      ]
+    }
+  },
+  {
+    "case": "refresh_success",
+    "method": "POST",
+    "path": "/mcauth/authserver/refresh",
+    "status": 200,
+    "body": {
+      "accessToken": "MmY1NGM5NWYyYzE2ZjNhNzM3ZTI5YWM3NTA2NGUzZDM=",
+      "clientToken": "fixture-client-token",
+      "selectedProfile": {
+        "id": "4c4493446ff0492caefc69622f662b72",
+        "name": "MigrationNew",
+        "properties": [
+          {
+            "name": "textures",
+            "value": "ewogICAgInRpbWVzdGFtcCI6IDE3OTI2NzU4MjAsCiAgICAicHJvZmlsZUlkIjogIjRjNDQ5MzQ0NmZmMDQ5MmNhZWZjNjk2MjJmNjYyYjcyIiwKICAgICJwcm9maWxlTmFtZSI6ICJNaWdyYXRpb25OZXciLAogICAgInRleHR1cmVzIjogewogICAgICAgICJTS0lOIjogewogICAgICAgICAgICAidXJsIjogImh0dHBzOlwvXC9hcGkuYWlobWMudG9wXC90ZXh0dXJlc1wvZml4dHVyZS1za2luIiwKICAgICAgICAgICAgIm1ldGFkYXRhIjogewogICAgICAgICAgICAgICAgIm1vZGVsIjogImRlZmF1bHQiCiAgICAgICAgICAgIH0KICAgICAgICB9LAogICAgICAgICJDQVBFIjogewogICAgICAgICAgICAidXJsIjogImh0dHBzOlwvXC9hcGkuYWlobWMudG9wXC90ZXh0dXJlc1wvZml4dHVyZS1jYXBlIgogICAgICAgIH0KICAgIH0KfQ=="
+          }
+        ]
+      },
+      "user": {
+        "id": "7b4e2b540302e8deabe7dcbfa8704150",
+        "properties": []
+      }
+    }
+  },
+  {
+    "case": "old_token_after_refresh",
+    "method": "POST",
+    "path": "/mcauth/authserver/validate",
+    "status": 403,
+    "body": {
+      "error": "ForbiddenOperationException",
+      "errorMessage": "Invalid token."
+    }
+  },
+  {
+    "case": "new_token_after_refresh",
+    "method": "POST",
+    "path": "/mcauth/authserver/validate",
+    "status": 204,
+    "body": null
+  },
+  {
+    "case": "invalidate_success",
+    "method": "POST",
+    "path": "/mcauth/authserver/invalidate",
+    "status": 204,
+    "body": null
+  },
+  {
+    "case": "validate_after_invalidate",
+    "method": "POST",
+    "path": "/mcauth/authserver/validate",
+    "status": 403,
+    "body": {
+      "error": "ForbiddenOperationException",
+      "errorMessage": "Invalid token."
+    }
+  },
+  {
+    "case": "login_after_invalidate",
+    "method": "POST",
+    "path": "/mcauth/authserver/authenticate",
+    "status": 200,
+    "body": {
+      "accessToken": "NmFlYWUxMjdiMDBjOTBhMmQ1NGFjMDhlNTUwOTNlNjZjOWY3YTM5MTE4MTcyNDQ2YmYyOTI1OWZlNjlkZDMyZQ==",
+      "clientToken": "fixture-client-token",
+      "availableProfiles": [
+        {
+          "id": "4c4493446ff0492caefc69622f662b72",
+          "name": "MigrationNew"
+        }
+      ],
+      "selectedProfile": {
+        "id": "4c4493446ff0492caefc69622f662b72",
+        "name": "MigrationNew"
+      },
+      "user": {
+        "id": "7b4e2b540302e8deabe7dcbfa8704150",
+        "properties": []
+      }
+    }
+  },
+  {
+    "case": "signout_success",
+    "method": "POST",
+    "path": "/mcauth/authserver/signout",
+    "status": 204,
+    "body": null
+  },
+  {
+    "case": "validate_after_signout",
+    "method": "POST",
+    "path": "/mcauth/authserver/validate",
+    "status": 403,
+    "body": {
+      "error": "ForbiddenOperationException",
+      "errorMessage": "Invalid token."
+    }
+  },
+  {
+    "case": "login_before_delete",
+    "method": "POST",
+    "path": "/mcauth/authserver/authenticate",
+    "status": 200,
+    "body": {
+      "accessToken": "NmFlYWUxMjdiMDBjOTBhMmQ1NGFjMDhlNTUwOTNlNjZjOWY3YTM5MTE4MTcyNDQ2YmYyOTI1OWZlNjlkZDMyZQ==",
+      "clientToken": "fixture-client-token",
+      "availableProfiles": [
+        {
+          "id": "4c4493446ff0492caefc69622f662b72",
+          "name": "MigrationNew"
+        }
+      ],
+      "selectedProfile": {
+        "id": "4c4493446ff0492caefc69622f662b72",
+        "name": "MigrationNew"
+      },
+      "user": {
+        "id": "7b4e2b540302e8deabe7dcbfa8704150",
+        "properties": []
+      }
+    }
+  },
+  {
+    "case": "delete_success",
+    "method": "POST",
+    "path": "/system/deluser",
+    "status": 200,
+    "body": {
+      "msg": "删除成功"
+    }
+  },
+  {
+    "case": "name_after_delete",
+    "method": "GET",
+    "path": "/mcauth/users/profiles/minecraft/MigrationNew",
+    "status": 404,
+    "body": {
+      "error": "UserNotFound",
+      "errorMessage": "The requested user MigrationNew could not be found"
+    }
+  }
+]

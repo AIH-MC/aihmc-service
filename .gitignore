@@ -1,0 +1,26 @@
+# Local configuration, credentials, and runtime data
+config.toml
+config.toml.*
+config.php
+db.sql
+keys/
+secrets/
+textures/
+.local/
+.codegraph/
+build.log
+*.exe
+*.test
+coverage.out
+dist/
+aihmc-service-linux-amd64.tar.gz
+aihmc-service-linux-amd64.tar.gz.sha256
+
+# The historical archive must never contain live credentials or data.
+archive/**/config.php
+archive/**/config.toml
+archive/**/config.toml.*
+archive/**/db.sql
+archive/**/keys/
+archive/**/secrets/
+archive/**/textures/

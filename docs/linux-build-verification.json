@@ -1,0 +1,8 @@
+{
+  "target": "linux/amd64",
+  "format": "ELF64 little-endian x86-64",
+  "cgo_enabled": false,
+  "sha256": "ff36833d6b4d4aec39fd75e96015e95ec8e3632f28d1bd20848909811d49f7de",
+  "size_bytes": 8085666,
+  "native_linux_execution": "MANUAL/PENDING - no Linux runtime available locally"
+}

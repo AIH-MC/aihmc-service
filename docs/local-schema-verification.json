@@ -1,0 +1,46 @@
+{
+  "business_rows_read_or_modified": false,
+  "comparison": "column types, nullability, defaults, charset, collation, primary and unique index definitions",
+  "layout_matches": true,
+  "production_host_verification": "MANUAL/PENDING",
+  "source": "existing configured local schema",
+  "tables": [
+    {
+      "column_count": 6,
+      "index_components": 5,
+      "matches_test_schema": true,
+      "table": "mcauth_profiles"
+    },
+    {
+      "column_count": 6,
+      "index_components": 4,
+      "matches_test_schema": true,
+      "table": "mcauth_tokens"
+    },
+    {
+      "column_count": 8,
+      "index_components": 4,
+      "matches_test_schema": true,
+      "table": "mcauth_textures"
+    },
+    {
+      "column_count": 5,
+      "index_components": 1,
+      "matches_test_schema": true,
+      "table": "mcauth_logins"
+    },
+    {
+      "column_count": 4,
+      "index_components": 1,
+      "matches_test_schema": true,
+      "table": "mcauth_skin_urls"
+    },
+    {
+      "column_count": 4,
+      "index_components": 2,
+      "matches_test_schema": true,
+      "table": "texture_apis"
+    }
+  ],
+  "target": "isolated schema created from tests/schema.sql"
+}

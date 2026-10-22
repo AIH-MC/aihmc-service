@@ -1,0 +1,16 @@
+{
+  "http_status": 200,
+  "matches_existing_local_configuration": {
+    "allow_non_email": true,
+    "homepage": true,
+    "implementation_name": true,
+    "implementation_version": true,
+    "register": true,
+    "rsa_public_key": true,
+    "server_name": true,
+    "skin_domains": true
+  },
+  "read_only_request": true,
+  "successful_real_login": "MANUAL/PENDING",
+  "tls_verified": true
+}

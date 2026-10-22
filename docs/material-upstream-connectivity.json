@@ -1,0 +1,50 @@
+{
+  "real_skin_and_cape_loading": "MANUAL/PENDING",
+  "sources": [
+    {
+      "host": "skin.aihmc.top",
+      "http_status": 200,
+      "request": "HEAD to configured base URL; business content not validated",
+      "source_index": 1,
+      "tls_used": true,
+      "tls_verification_enabled": true,
+      "transport_passed": true
+    },
+    {
+      "host": "littleskin.cn",
+      "http_status": 200,
+      "request": "HEAD to configured base URL; business content not validated",
+      "source_index": 2,
+      "tls_used": true,
+      "tls_verification_enabled": true,
+      "transport_passed": true
+    },
+    {
+      "host": "api.mojang.com",
+      "http_status": 404,
+      "request": "HEAD to configured base URL; business content not validated",
+      "source_index": 3,
+      "tls_used": true,
+      "tls_verification_enabled": true,
+      "transport_passed": true
+    },
+    {
+      "host": "crafatar.com",
+      "http_status": 200,
+      "request": "HEAD to configured base URL; business content not validated",
+      "source_index": 4,
+      "tls_used": true,
+      "tls_verification_enabled": true,
+      "transport_passed": true
+    },
+    {
+      "host": "crafthead.net",
+      "http_status": 200,
+      "request": "HEAD to configured base URL; business content not validated",
+      "source_index": 5,
+      "tls_used": true,
+      "tls_verification_enabled": true,
+      "transport_passed": true
+    }
+  ]
+}
