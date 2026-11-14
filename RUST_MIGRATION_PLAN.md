@@ -3,7 +3,7 @@
 日期：2026-11-14
 仓库：https://github.com/AIH-MC/aihmc-service
 分支：`aihmc-auth`
-状态：迁移实施中；阶段 1—3 已完成 Windows 自动验证。
+状态：迁移实施中；阶段 1—4 已完成 Windows 自动验证。
 
 ## 1. 目标与范围
 
@@ -209,12 +209,13 @@ PowerShell 打包脚本还需显式处理 cmdlet 失败，不能仅依赖 LASTEX
 | 阶段 1 行为基线 | DONE：Windows 18 项测试通过，含真实回环 HTTP 和现有 MariaDB 隔离库 |
 | 阶段 2 基础与手动 CI | DONE：Windows fmt/Clippy、5 测试、release 包解压 HTTP 冒烟通过 |
 | 阶段 3 认证与账户 | DONE：6 Rust 单元 + 6 真实 HTTP/MariaDB 集成；Windows release 包通过 |
-| 阶段 4—5 实施 | NOT STARTED |
+| 阶段 4 皮肤与头像 | DONE：8 单元、4 真实 HTTP/PNG 像素/缓存集成、Windows 发布包通过 |
+| 阶段 5 实施 | NOT STARTED |
 | 本地 Windows 编译测试 | NOT RUN |
 | 三平台 Actions | NOT RUN，用户要求本次不执行，未来仅手动触发 |
 | 真实插件及上游人工验收 | MANUAL/PENDING |
 
-下一步执行阶段 4；Python 基线差异和验证细节见 `docs/PYTHON_BASELINE.md`。每阶段记录命令、工具链、架构、日志、实际通过/失败/未运行以及提交推送结果。
+下一步执行阶段 5；Python 基线差异和验证细节见 `docs/PYTHON_BASELINE.md`。每阶段记录命令、工具链、架构、日志、实际通过/失败/未运行以及提交推送结果。
 
 官方参考：
 

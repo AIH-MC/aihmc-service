@@ -13,7 +13,7 @@ use crate::state::AppState;
 use crate::{
     auth,
     error::{ApiError, ApiResult},
-    figura, offline, profile,
+    figura, head, offline, profile, skin,
 };
 use axum::extract::{ConnectInfo, OriginalUri, Path, Query, rejection::JsonRejection};
 use axum::routing::post;
@@ -53,6 +53,9 @@ pub fn router(state: AppState) -> Router {
             get(check_name),
         )
         .route("/figura/hasJoined", get(figura_join))
+        .route("/csl/{username}", get(csl))
+        .route("/textures/{texture_hash}", get(texture))
+        .route("/head/{account}/{size}", get(player_head))
         .merge(protected)
         .layer(
             CorsLayer::new()
@@ -61,6 +64,40 @@ pub fn router(state: AppState) -> Router {
                 .allow_headers(Any),
         )
         .with_state(state)
+}
+
+async fn csl(
+    State(state): State<AppState>,
+    Path(username): Path<String>,
+) -> ApiResult<Json<Value>> {
+    let value = skin::create_csl(&state, &username.replace(".json", ""))
+        .await?
+        .ok_or_else(|| ApiError::message(404, "未找到该玩家或该玩家没有皮肤"))?;
+    Ok(Json(value))
+}
+
+async fn texture(State(state): State<AppState>, Path(hash): Path<String>) -> ApiResult<Response> {
+    let path = state.resource("textures").join(hash);
+    if !path.is_file() {
+        return Err(ApiError::message(404, "未找到材质"));
+    }
+    let bytes = tokio::fs::read(path).await.map_err(ApiError::internal)?;
+    Ok(([(header::CONTENT_TYPE, "image/png")], bytes).into_response())
+}
+
+async fn player_head(
+    State(state): State<AppState>,
+    Path((account, size)): Path<(String, String)>,
+) -> ApiResult<Response> {
+    let size_value = size.parse::<i64>().map_err(|_| ApiError::validation(vec![json!({
+        "type": "int_parsing", "loc": ["path", "size"],
+        "msg": "Input should be a valid integer, unable to parse string as an integer", "input": size
+    })]))?;
+    let size = u32::try_from(size_value).unwrap_or(0);
+    let bytes = head::get_head(&state, &account, size)
+        .await?
+        .ok_or_else(|| ApiError::message(404, "获取头像失败，请检查玩家名或 UUID"))?;
+    Ok(([(header::CONTENT_TYPE, "image/png")], bytes).into_response())
 }
 
 async fn metadata(State(state): State<AppState>) -> ApiResult<Json<Value>> {
