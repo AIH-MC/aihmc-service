@@ -1,11 +1,11 @@
 """Real Rust process and existing-instance database fixtures for Windows tests."""
 
-import json
 import os
 import re
 import shutil
 import socket
 import subprocess
+import sys
 import time
 import uuid
 from pathlib import Path
@@ -13,38 +13,18 @@ from pathlib import Path
 import httpx
 import pymysql
 import yaml
+from scripts.convert_config import encode_toml
 
 ROOT = Path(__file__).resolve().parents[1]
 TOKEN = {"Authorization": "Bearer rust-integration-token"}
 
 
-def encode_toml(config):
-    lines = []
-    for key, value in config.items():
-        if not isinstance(value, dict) and not (
-            isinstance(value, list) and value and isinstance(value[0], dict)
-        ):
-            lines.append(f"{key} = {json.dumps(value, ensure_ascii=False)}")
-    for key, value in config.items():
-        if isinstance(value, dict):
-            lines.append(f"\n[{key}]")
-            lines.extend(
-                f"{name} = {json.dumps(item, ensure_ascii=False)}"
-                for name, item in value.items()
-            )
-        elif isinstance(value, list) and value and isinstance(value[0], dict):
-            for item in value:
-                lines.append(f"\n[[{key}]]")
-                lines.extend(
-                    f"{name} = {json.dumps(field, ensure_ascii=False)}"
-                    for name, field in item.items()
-                )
-    return "\n".join(lines) + "\n"
-
-
 class IsolatedDatabase:
     def __init__(self):
-        config_path = Path(os.environ.get("AIHMC_TEST_CONFIG", ROOT / "config.yml"))
+        default_config = ROOT / "config.toml"
+        if not default_config.exists():
+            default_config = ROOT / "config.yml"
+        config_path = Path(os.environ.get("AIHMC_TEST_CONFIG", default_config))
         if config_path.suffix == ".toml":
             import tomllib
 
@@ -101,7 +81,9 @@ class IsolatedDatabase:
 
 
 class RustService:
-    def __init__(self, database, sources=None, proxy=None, allow_offline=True):
+    def __init__(
+        self, database, sources=None, proxy=None, allow_offline=True, reference=False
+    ):
         self.directory = ROOT / "test-output" / ("rust-http-" + uuid.uuid4().hex)
         self.directory.mkdir(parents=True)
         shutil.copytree(ROOT / "assets", self.directory / "assets")
@@ -150,9 +132,14 @@ class RustService:
                 ROOT / "target/x86_64-pc-windows-msvc/debug/aihmc-auth.exe",
             )
         )
+        command = [str(executable), "--config", str(config_path)]
+        if reference:
+            environment["AIHMC_REFERENCE_CONFIG"] = str(config_path)
+            environment["PYTHONPATH"] = str(ROOT)
+            command = [sys.executable, "-m", "tests.baseline_server", str(port)]
         self.process = subprocess.Popen(
-            [str(executable), "--config", str(config_path)],
-            cwd=ROOT,
+            command,
+            cwd=self.directory,
             env=environment,
             stdout=self.log,
             stderr=subprocess.STDOUT,

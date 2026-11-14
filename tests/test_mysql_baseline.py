@@ -1,8 +1,11 @@
 """Real MariaDB characterization in a uniquely named disposable database."""
 
 import re
+import os
+import tomllib
 import unittest
 import uuid
+from pathlib import Path
 from unittest.mock import patch
 
 import aiomysql
@@ -14,12 +17,20 @@ from libs import auth, database, figura, offline_auth, skin, utils
 
 class MySQLBaseline(unittest.IsolatedAsyncioTestCase):
     async def asyncSetUp(self):
-        config_path = ROOT / "config.yml"
+        config_path = Path(os.environ.get("AIHMC_TEST_CONFIG", ROOT / "config.toml"))
+        if not config_path.exists():
+            config_path = ROOT / "config.yml"
         if not config_path.exists():
             self.skipTest(
                 "Existing MySQL connection not configured in ignored config.yml"
             )
-        config = yaml.safe_load(config_path.read_text(encoding="utf-8"))["database"]
+        text = config_path.read_text(encoding="utf-8")
+        data = (
+            tomllib.loads(text)
+            if config_path.suffix == ".toml"
+            else yaml.safe_load(text)
+        )
+        config = data["database"]
         self.connection = await aiomysql.connect(
             host=config["host"],
             port=config["port"],

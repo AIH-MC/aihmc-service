@@ -7,7 +7,6 @@ use axum::{
     routing::get,
 };
 use serde_json::json;
-use tower_http::cors::{Any, CorsLayer};
 
 use crate::state::AppState;
 use crate::{
@@ -18,7 +17,7 @@ use crate::{
 use axum::extract::{ConnectInfo, OriginalUri, Path, Query, rejection::JsonRejection};
 use axum::routing::post;
 use serde_json::Value;
-use std::{collections::HashMap, net::SocketAddr};
+use std::{collections::HashMap, net::SocketAddr, sync::LazyLock};
 
 pub fn router(state: AppState) -> Router {
     let protected = Router::new()
@@ -56,14 +55,165 @@ pub fn router(state: AppState) -> Router {
         .route("/csl/{username}", get(csl))
         .route("/textures/{texture_hash}", get(texture))
         .route("/head/{account}/{size}", get(player_head))
-        .merge(protected)
-        .layer(
-            CorsLayer::new()
-                .allow_origin(Any)
-                .allow_methods(Any)
-                .allow_headers(Any),
+        .route(
+            "/openapi.json",
+            get(|| async {
+                (
+                    [(header::CONTENT_TYPE, "application/json")],
+                    include_str!("../assets/openapi.json"),
+                )
+            }),
         )
+        .route(
+            "/docs",
+            get(|| async { documentation(include_str!("../assets/docs.html.json")) }),
+        )
+        .route(
+            "/redoc",
+            get(|| async { documentation(include_str!("../assets/redoc.html.json")) }),
+        )
+        .route(
+            "/docs/oauth2-redirect",
+            get(|| async { documentation(include_str!("../assets/oauth2-redirect.html.json")) }),
+        )
+        .merge(protected)
+        .fallback(not_found)
+        .method_not_allowed_fallback(|| async {
+            (
+                StatusCode::METHOD_NOT_ALLOWED,
+                Json(json!({"detail": "Method Not Allowed"})),
+            )
+        })
+        .layer(middleware::from_fn(cors))
         .with_state(state)
+}
+
+fn documentation(encoded: &str) -> axum::response::Html<String> {
+    axum::response::Html(
+        serde_json::from_str(encoded).expect("embedded documentation is valid JSON"),
+    )
+}
+
+async fn not_found(request: Request) -> Response {
+    let path = request.uri().path();
+    if path.ends_with('/') && path != "/" {
+        let trimmed = path.trim_end_matches('/');
+        let known = ["/docs", "/redoc", "/docs/oauth2-redirect", "/openapi.json"]
+            .contains(&trimmed)
+            || business_path(trimmed);
+        if known {
+            let host = request
+                .headers()
+                .get(header::HOST)
+                .and_then(|v| v.to_str().ok())
+                .unwrap_or("localhost");
+            let query = request
+                .uri()
+                .query()
+                .map(|query| format!("?{query}"))
+                .unwrap_or_default();
+            let location = format!("http://{host}{trimmed}{query}");
+            return (
+                StatusCode::TEMPORARY_REDIRECT,
+                [(header::LOCATION, location)],
+            )
+                .into_response();
+        }
+    }
+    (StatusCode::NOT_FOUND, Json(json!({"detail": "Not Found"}))).into_response()
+}
+
+fn business_path(path: &str) -> bool {
+    static SCHEMA: LazyLock<Value> =
+        LazyLock::new(|| serde_json::from_str(include_str!("../assets/openapi.json")).unwrap());
+    SCHEMA["paths"].as_object().unwrap().keys().any(|pattern| {
+        let actual: Vec<_> = path.split('/').collect();
+        let expected: Vec<_> = pattern.split('/').collect();
+        actual.len() == expected.len()
+            && actual.iter().zip(expected).all(|(actual, expected)| {
+                (!actual.is_empty() && expected.starts_with('{')) || *actual == expected
+            })
+    })
+}
+
+async fn cors(request: Request, next: Next) -> Response {
+    let origin = request.headers().get(header::ORIGIN).cloned();
+    let method = request
+        .headers()
+        .get(header::ACCESS_CONTROL_REQUEST_METHOD)
+        .cloned();
+    let requested_headers = request
+        .headers()
+        .get(header::ACCESS_CONTROL_REQUEST_HEADERS)
+        .cloned();
+    let cookie = request.headers().contains_key(header::COOKIE);
+    if request.method() == axum::http::Method::OPTIONS
+        && origin.is_some()
+        && let Some(method) = method
+    {
+        let allowed = [
+            "DELETE", "GET", "HEAD", "OPTIONS", "PATCH", "POST", "PUT", "QUERY",
+        ];
+        let valid = method
+            .to_str()
+            .is_ok_and(|method| allowed.contains(&method));
+        let mut response = (
+            if valid {
+                StatusCode::OK
+            } else {
+                StatusCode::BAD_REQUEST
+            },
+            if valid {
+                "OK"
+            } else {
+                "Disallowed CORS method"
+            },
+        )
+            .into_response();
+        let headers = response.headers_mut();
+        headers.insert(
+            header::ACCESS_CONTROL_ALLOW_ORIGIN,
+            header::HeaderValue::from_static("*"),
+        );
+        headers.insert(
+            header::ACCESS_CONTROL_ALLOW_METHODS,
+            header::HeaderValue::from_static("DELETE, GET, HEAD, OPTIONS, PATCH, POST, PUT, QUERY"),
+        );
+        headers.insert(
+            header::ACCESS_CONTROL_MAX_AGE,
+            header::HeaderValue::from_static("600"),
+        );
+        if let Some(value) = requested_headers {
+            headers.insert(header::ACCESS_CONTROL_ALLOW_HEADERS, value);
+        }
+        return response;
+    }
+    let mut response =
+        if request.method() == axum::http::Method::HEAD && business_path(request.uri().path()) {
+            (
+                StatusCode::METHOD_NOT_ALLOWED,
+                Json(json!({"detail": "Method Not Allowed"})),
+            )
+                .into_response()
+        } else {
+            next.run(request).await
+        };
+    if let Some(origin) = origin {
+        if cookie {
+            response
+                .headers_mut()
+                .insert(header::ACCESS_CONTROL_ALLOW_ORIGIN, origin);
+            response
+                .headers_mut()
+                .insert(header::VARY, header::HeaderValue::from_static("Origin"));
+        } else {
+            response.headers_mut().insert(
+                header::ACCESS_CONTROL_ALLOW_ORIGIN,
+                header::HeaderValue::from_static("*"),
+            );
+        }
+    }
+    response
 }
 
 async fn csl(

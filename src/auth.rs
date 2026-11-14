@@ -11,7 +11,9 @@ use crate::{
 pub async fn metadata(state: &AppState) -> ApiResult<Value> {
     let key = tokio::fs::read_to_string(state.resource(&state.config.rsakey.public_keyfile))
         .await
-        .map_err(ApiError::internal)?;
+        .map_err(ApiError::internal)?
+        .replace("\r\n", "\n")
+        .replace('\r', "\n");
     let mut domains = state.config.extra_skin_domains.clone();
     for source in &state.config.servers {
         if source.enabled == Some(true) {

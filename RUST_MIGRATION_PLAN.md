@@ -3,7 +3,7 @@
 日期：2026-11-14
 仓库：https://github.com/AIH-MC/aihmc-service
 分支：`aihmc-auth`
-状态：迁移实施中；阶段 1—4 已完成 Windows 自动验证。
+状态：五阶段实施及本地 Windows 自动验收完成；Actions 按用户要求未运行，人工验收待执行。
 
 ## 1. 目标与范围
 
@@ -210,12 +210,12 @@ PowerShell 打包脚本还需显式处理 cmdlet 失败，不能仅依赖 LASTEX
 | 阶段 2 基础与手动 CI | DONE：Windows fmt/Clippy、5 测试、release 包解压 HTTP 冒烟通过 |
 | 阶段 3 认证与账户 | DONE：6 Rust 单元 + 6 真实 HTTP/MariaDB 集成；Windows release 包通过 |
 | 阶段 4 皮肤与头像 | DONE：8 单元、4 真实 HTTP/PNG 像素/缓存集成、Windows 发布包通过 |
-| 阶段 5 实施 | NOT STARTED |
-| 本地 Windows 编译测试 | NOT RUN |
+| 阶段 5 回归与交付 | DONE（Windows 自动项）；31 项驱动测试、解压包集成、Python 独立归档通过 |
+| 本地 Windows 编译测试 | PASS：fmt、Clippy、8 Rust 单元、31 驱动测试、发布包及解压包 6 项集成 |
 | 三平台 Actions | NOT RUN，用户要求本次不执行，未来仅手动触发 |
 | 真实插件及上游人工验收 | MANUAL/PENDING |
 
-下一步执行阶段 5；Python 基线差异和验证细节见 `docs/PYTHON_BASELINE.md`。每阶段记录命令、工具链、架构、日志、实际通过/失败/未运行以及提交推送结果。
+本轮无剩余代码实施；完整验收及手动待验项见 `docs/VALIDATION.md`。Python 基线差异见 `docs/PYTHON_BASELINE.md`。每阶段记录命令、工具链、架构、日志、实际通过/失败/未运行以及提交推送结果。
 
 官方参考：
 

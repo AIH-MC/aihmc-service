@@ -1,6 +1,6 @@
-# Rust 部署（迁移实施中）
+# Rust 部署
 
-阶段 2 的包仅提供基础 HTTP 与 Token 校验，尚不能替换完整 Python 后端。
+Rust 已覆盖原业务路由。Windows 自动验收包括真实 HTTP、现有 MariaDB 隔离库、Python 对照及 PNG 像素回归；Linux 构建和真实插件/上游账号验收状态单独记录。
 
 解压对应架构包，复制 `config.example.toml` 为 `config.toml`，填写现有数据库连接、访问 Token 及密钥路径。在包目录运行 `aihmc-auth.exe`（Windows）或 `./aihmc-auth`（Linux）。可用 `--config <绝对或相对路径>` 指定配置。
 
@@ -10,4 +10,12 @@
 
 本地只验证 `x86_64-pc-windows-msvc`。Actions 仅 workflow_dispatch，由用户手动运行，开发提交不自动触发。Linux 包使用 Ubuntu 24.04 原生构建，最低实际系统/动态库要求需等待手动构建结果，不宣称支持旧 glibc 或所有发行版。
 
-生产切换须先备份配置、密钥、数据库和缓存，获授权后切换入口。无表结构迁移；回滚恢复原 Python 入口及已备份配置，不清理业务数据。原 Python 在最终迁移完成后归档至 `legacy/python/`。
+生产切换须先备份配置、密钥、数据库和缓存，获授权后切换入口。无表结构迁移；回滚恢复 `legacy/python/main.py`、原 YAML 配置和已备份密钥，不清理业务数据。Python 归档包含独立资源及运行说明。
+
+旧配置转换：使用 `scripts/convert_config.py` 一次性转换 YAML 为 TOML；既有目标配置不会覆盖，旧 YAML 不删除。不要把真实配置、密钥、缓存或数据库备份提交到仓库。
+
+API 保留原 `/docs`、`/redoc`、`/openapi.json` 及 Swagger OAuth 重定向入口；OpenAPI 为从 Python 基线导出的静态兼容契约。Swagger/Redoc 页面和原版一样从外部 CDN 加载前端资源。
+
+已确认且保留的旧行为：资料关联写库成功仍返回 400；带 IP 的 hasJoined 查询拼接；Mojang CSL 不下载材质；重名 INSERT IGNORE；强制改名在持续数据库错误时的无界重试。详见 `docs/PYTHON_BASELINE.md`，本轮没有顺带修复。
+
+真实插件/真实上游账号与生产流量未操作，验收 MANUAL/PENDING。Actions 按用户要求未运行，Linux x64/ARM64 为 NOT RUN，不使用 Windows 结果替代。

@@ -32,6 +32,8 @@ Invoke-CargoStep 'release' @('build', '--locked', '--release', '--target', $Targ
 $staging = Join-Path $root ('test-output/package-' + [guid]::NewGuid().ToString('N'))
 New-Item -ItemType Directory -Path $staging | Out-Null
 New-Item -ItemType Directory -Path (Join-Path $staging 'keys'), (Join-Path $staging 'textures') | Out-Null
+Set-Content -LiteralPath (Join-Path $staging 'keys/.keep') -Value ''
+Set-Content -LiteralPath (Join-Path $staging 'textures/.keep') -Value ''
 $binaryName = if ($Platform -eq 'windows-x64') { 'aihmc-auth.exe' } else { 'aihmc-auth' }
 Copy-Item -LiteralPath (Join-Path $root "target/$Target/release/$binaryName") -Destination $staging
 Copy-Item -LiteralPath (Join-Path $root 'config.example.toml') -Destination $staging

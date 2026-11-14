@@ -52,6 +52,10 @@ try {
     if ($response.message -ne '验证通过') {
         throw 'Bearer HTTP smoke failed'
     }
+    $image = Invoke-WebRequest "http://127.0.0.1:$port/head/!/16"
+    if ($image.StatusCode -ne 200 -or $image.Headers.'Content-Type' -notcontains 'image/png') {
+        throw 'Packaged default avatar resource smoke failed'
+    }
     Write-Output "PASS: real executable HTTP smoke on port $port"
 }
 finally {
