@@ -69,3 +69,25 @@ SQLx 0.9 首轮编译要求动态 SQL 实现 SqlSafeStr，已改为 QueryBuilder
 - Windows fmt、Clippy -D warnings、release、压缩包 SHA256、解包 CLI 冒烟，以及解包程序真实配置/数据库检查、根路径请求、监听冲突、数据库失败、正常退出均 PASS。
 
 证据见 `rust-r2-verification.json`。通用 CI 的默认测试命令将 3 个需要本地数据库/Go 桥的用例显式标为 ignored；本轮已通过上述 include-ignored 命令执行全部用例，不能用默认测试摘要替代完整验收。Actions、Linux musl、真实账号和客户端仍为非阻塞 MANUAL/PENDING。R3 至 R6 待实施。
+
+R2 检查点：`4a66088442717db4a9fe973b833b587614555327` 已提交推送，远端核对一致。
+
+## R3 — 本地自动验收通过
+
+实现认证、刷新、验证、失效、退出、角色查询、join/hasJoined、元信息与默认路由的 HTTP handler；保持原始 URI 匹配、查询参数最后一个值、unsigned 字符串真值、二次查询解码、JSON 空值和空体、空数组及字段省略。X-Real-IP 仅信任回环 TCP 对端，包含 IPv4-mapped IPv6 的正确处理。
+
+认证事务保持本地身份锁、重复绑定令牌、刷新后二次锁校验及已证实的死锁重试范围；上游请求在重试之外执行。事务 API 允许业务错误向外传播并回滚，避免把无效令牌当作正常提交结果。
+
+使用 Hyper HTTP/1 和每连接时钟落实原有 ReadHeaderTimeout、整请求 ReadTimeout、从头部读取完成开始的 WriteTimeout，以及由 ReadTimeout 派生的空闲期限。不能把请求头期限用于 keep-alive 空闲等待，也不能在无缓冲 TCP flush 时提前取消尚未写响应的处理器。真实 TCP 对照确认慢头、慢体、空闲复用、写超时和已提交数据库副作用均与 Go 一致。正式二进制已使用该传输层，正常 Windows 控制台退出通过。
+
+验证证据：
+
+- 17 项 Windows Rust 全量测试（含 3 项显式启用的数据库/跨语言用例）PASS。
+- `scripts/verify-contract.py` 通过真实 Go/Rust handler 进程分别执行 45 项请求，比较状态、Content-Type、JSON、204 空体及最终数据库状态；数据库每轮复位为相同隔离初始状态。八请求并发首次登录、并发刷新、Go 写 Rust 读/Rust 写 Go 读以及新 Rust 进程读取旧令牌和身份均 PASS。
+- 固定材质依赖只用于该受控 R3 对照，不是完整材质验证。随机 UUID、令牌、生成 clientToken 和当轮时间按明确字段映射归一化；材质值先解码再比较字段，已签名响应由原 Go 密钥实现验证，不把签名字符串差异直接忽略。
+- `scripts/verify-timeouts.py` 对照两种实现的慢请求头、整请求期限、空闲期限、响应写期限和超时后的已提交记录，全部 PASS。
+- Windows Black/rustfmt、Clippy -D warnings、release、白名单发布包解包、CLI 冒烟、真实配置/数据库检查、根路径和正常退出均 PASS。
+
+过程中并发场景曾在 Go 同样返回 500；最小复现和脱敏错误类别定位到 Python 受控 UCenter 默认 backlog=5，改为 64 后保留原八请求压力，Go/Rust 均通过，未修改 Go 生产代码或减少并发数。keep-alive 期限差异已由独立 TCP 用例复现并修正。
+
+完整证据见 `rust-r3-verification.json`、`rust-r3-contract-comparison.json`、`rust-r3-timeouts.json`。业务 HTTP 以独立夹具进程验证，正式入口当前仍仅开放根路径；R4 完成实际材质依赖后统一组装完整业务入口，不宣称当前阶段包已可替换完整 Go 服务。Actions/Linux 为非阻塞 MANUAL/PENDING，不运行、不等待。R4 至 R6 待实施。

@@ -15,7 +15,8 @@ impl From<sqlx::Error> for Error {
 }
 
 pub type Result<T> = std::result::Result<T, Error>;
-pub type QueryFuture<'a, T> = Pin<Box<dyn Future<Output = Result<T>> + Send + 'a>>;
+pub type QueryFuture<'a, T, E = Error> =
+    Pin<Box<dyn Future<Output = std::result::Result<T, E>> + Send + 'a>>;
 
 #[derive(Clone)]
 pub struct Store {
@@ -71,7 +72,7 @@ impl Store {
 
     pub async fn read<T: Send>(
         &self,
-        action: impl for<'a> FnOnce(Queries<'a>) -> QueryFuture<'a, T>,
+        action: impl for<'a> FnOnce(Queries<'a>) -> QueryFuture<'a, T> + Send,
     ) -> Result<T> {
         tokio::time::timeout(self.timeout, async {
             let mut connection = self.pool.acquire().await?;
@@ -84,29 +85,29 @@ impl Store {
         .map_err(|_| Error::Timeout)?
     }
 
-    pub async fn transaction<T: Send>(
+    pub async fn transaction<T: Send, E: From<Error> + Send>(
         &self,
-        action: impl for<'a> FnOnce(Queries<'a>) -> QueryFuture<'a, T>,
-    ) -> Result<T> {
+        action: impl for<'a> FnOnce(Queries<'a>) -> QueryFuture<'a, T, E> + Send,
+    ) -> std::result::Result<T, E> {
         tokio::time::timeout(self.timeout, async {
-            let mut transaction = self.pool.begin().await?;
+            let mut transaction = self.pool.begin().await.map_err(Error::from)?;
             let result = action(Queries {
                 connection: &mut transaction,
             })
             .await;
             match result {
                 Ok(value) => {
-                    transaction.commit().await?;
+                    transaction.commit().await.map_err(Error::from)?;
                     Ok(value)
                 }
                 Err(error) => {
-                    transaction.rollback().await?;
+                    transaction.rollback().await.map_err(Error::from)?;
                     Err(error)
                 }
             }
         })
         .await
-        .map_err(|_| Error::Timeout)?
+        .map_err(|_| E::from(Error::Timeout))?
     }
 }
 

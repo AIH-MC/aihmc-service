@@ -17,6 +17,8 @@ version = "0.1.0"
 dependencies = [
  "axum",
  "base64 0.22.1",
+ "hyper",
+ "hyper-util",
  "md5",
  "regex",
  "reqwest",
@@ -30,6 +32,7 @@ dependencies = [
  "tempfile",
  "tokio",
  "toml",
+ "tower",
  "tracing",
  "tracing-subscriber",
  "url",

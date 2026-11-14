@@ -1,0 +1,16 @@
+{
+  "go": {
+    "slow_header": "PASS",
+    "whole_request_read_budget": "PASS",
+    "keep_alive_idle_budget": "PASS",
+    "write_deadline": "PASS",
+    "write_deadline_preserves_committed_state": "PASS"
+  },
+  "rust": {
+    "slow_header": "PASS",
+    "whole_request_read_budget": "PASS",
+    "keep_alive_idle_budget": "PASS",
+    "write_deadline": "PASS",
+    "write_deadline_preserves_committed_state": "PASS"
+  }
+}

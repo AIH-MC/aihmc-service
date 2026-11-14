@@ -1,6 +1,6 @@
 use std::path::PathBuf;
 
-use aihmc_api::{config::RuntimeConfig, database};
+use aihmc_api::{config::RuntimeConfig, database, server};
 use axum::{Json, Router, routing::any};
 use serde_json::json;
 use tracing::Level;
@@ -69,22 +69,7 @@ async fn run() -> Result<(), String> {
         .await
         .map_err(|_| "cannot listen on server.listen")?;
     tracing::info!(address = %listener.local_addr().map_err(|_| "cannot query listener address")?, "server started");
-    let (stop_sender, stop_receiver) = tokio::sync::oneshot::channel();
-    let server = axum::serve(listener, app).with_graceful_shutdown(async {
-        let _ = stop_receiver.await;
-    });
-    let server = std::future::IntoFuture::into_future(server);
-    tokio::pin!(server);
-    tokio::select! {
-        result = &mut server => result.map_err(|_| "HTTP server failed")?,
-        result = shutdown_signal() => {
-            result?;
-            let _ = stop_sender.send(());
-            tokio::time::timeout(runtime.config.server.shutdown_timeout.0, &mut server).await
-                .map_err(|_| "graceful shutdown timed out")?
-                .map_err(|_| "HTTP server failed")?;
-        }
-    }
+    server::serve(listener, app, &runtime.config.server, shutdown_signal()).await?;
     pool.close().await;
     tracing::info!("server stopped");
     Ok(())

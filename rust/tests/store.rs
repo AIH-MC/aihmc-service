@@ -138,7 +138,7 @@ async fn existing_database_transactions_identity_queries_and_timeouts() {
         .unwrap();
 
     let failed = store
-        .transaction(|mut q| {
+        .transaction::<_, Error>(|mut q| {
             Box::pin(async move {
                 seed(
                     &mut q,
@@ -167,7 +167,7 @@ async fn existing_database_transactions_identity_queries_and_timeouts() {
         .unwrap();
 
     store
-        .transaction(|mut q| {
+        .transaction::<_, Error>(|mut q| {
             Box::pin(async move {
                 seed(
                     &mut q,
@@ -201,7 +201,7 @@ async fn existing_database_transactions_identity_queries_and_timeouts() {
         .unwrap();
 
     store
-        .transaction(|mut q| {
+        .transaction::<_, Error>(|mut q| {
             Box::pin(async move {
                 let mut profile = q.profile_by_uid(960001, true).await?.unwrap();
                 profile.name = "must-not-change-identity".into();
@@ -250,7 +250,7 @@ async fn existing_database_transactions_identity_queries_and_timeouts() {
         .unwrap();
 
     let conflicting = store
-        .transaction(|mut q| {
+        .transaction::<_, Error>(|mut q| {
             Box::pin(async move {
                 q.refresh("rust-client", "ambiguous-new-access").await?;
                 Ok(())
@@ -259,7 +259,7 @@ async fn existing_database_transactions_identity_queries_and_timeouts() {
         .await;
     assert!(matches!(conflicting, Err(Error::Database(_))));
     let conflicting_identity = store
-        .transaction(|mut q| {
+        .transaction::<_, Error>(|mut q| {
             Box::pin(async move {
                 q.save_profile(&Profile {
                     uid: 960004,
@@ -307,7 +307,7 @@ async fn existing_database_transactions_identity_queries_and_timeouts() {
         .unwrap();
 
     let rollback = store
-        .transaction(|mut q| {
+        .transaction::<_, Error>(|mut q| {
             Box::pin(async move {
                 assert!(q.delete_user(960001).await?);
                 Err::<(), _>(Error::Timeout)
@@ -334,7 +334,7 @@ async fn existing_database_transactions_identity_queries_and_timeouts() {
         .unwrap();
     let short_store = Store::new(pool.clone(), Duration::from_millis(40));
     let timeout = short_store
-        .transaction(|mut q| {
+        .transaction::<_, Error>(|mut q| {
             Box::pin(async move {
                 q.token("rust-access-one", "rust-client", true).await?;
                 Ok(())
@@ -366,7 +366,7 @@ async fn existing_database_transactions_identity_queries_and_timeouts() {
         .unwrap();
 
     store
-        .transaction(|mut q| {
+        .transaction::<_, Error>(|mut q| {
             Box::pin(async move {
                 assert!(q.delete_user(960001).await?);
                 assert!(!q.delete_user(960001).await?);
@@ -383,7 +383,7 @@ async fn existing_database_transactions_identity_queries_and_timeouts() {
         .await
         .unwrap();
     store
-        .transaction(|mut q| {
+        .transaction::<_, Error>(|mut q| {
             Box::pin(async move {
                 seed(
                     &mut q,

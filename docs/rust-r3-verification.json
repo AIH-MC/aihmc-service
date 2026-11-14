@@ -1,0 +1,51 @@
+{
+  "go_rust_live_token_interop": "PASS",
+  "logs": [
+    {
+      "log": ".local/rust-migration/logs/r3-all-tests.log",
+      "sha256": "f539a5f690192982a12012da4a0c523a129ee0a0432cedfc32bcd36d9962906a"
+    },
+    {
+      "log": ".local/rust-migration/logs/r3-http-contract.log",
+      "sha256": "00c709dbfc4fedbd162742d075eff3df082e650126150bf9864d50de0af27872"
+    },
+    {
+      "log": ".local/rust-migration/logs/r3-timeouts.log",
+      "sha256": "279b3fa079ebb2443c50d6abc551e14dce48d1c28442757b2db1520d73a7a377"
+    },
+    {
+      "log": ".local/rust-migration/logs/r3-runtime-check.log",
+      "sha256": "6ef32fb32257c10b7792507625e18ae52ad43897613b6f1f8103e3b02c7ec54f"
+    },
+    {
+      "log": "test-output/windows-x64/logs/clippy.log",
+      "sha256": "285443bcae51148a4b910b3dc957182e743309b9e83974eb0a41e15391349aa1"
+    },
+    {
+      "log": "test-output/windows-x64/logs/release.log",
+      "sha256": "94a7137ac3a2e55e22954a7004693e49c5121ee8e1520993ccb92af2547636d8"
+    },
+    {
+      "log": "test-output/windows-x64/logs/smoke.log",
+      "sha256": "bb5c5248bde31e263b942c959d2479087f6967212d55b51ef4812cd994121821"
+    }
+  ],
+  "http_and_database_comparison": "PASS",
+  "package_sha256": "ddd9761c1f34320e4e5a82a3cb3dfb5285451f42aa52afbdde7dc4c9c11c93d7",
+  "http_cases_per_runtime": 45,
+  "eight_concurrent_first_logins_and_concurrent_refresh": "PASS",
+  "target": "x86_64-pc-windows-msvc",
+  "restarted_handler_process": "PASS",
+  "windows_release_clippy_and_package_smoke": "PASS",
+  "stage": "R3",
+  "toolchain": "1.95.0",
+  "all_tests": {
+    "ignored": 0,
+    "command": "cargo test --locked --target x86_64-pc-windows-msvc -- --include-ignored --test-threads=1",
+    "passed": 17
+  },
+  "actions_linux": "MANUAL/PENDING; agent must not run; non-blocking",
+  "real_tcp_deadlines_and_write_timeout_database_outcome": "PASS",
+  "material_provider_and_full_production_business_wiring": "R4 pending",
+  "production_binary_root_transport_and_shutdown": "PASS"
+}

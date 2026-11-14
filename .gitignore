@@ -16,6 +16,7 @@ build.log
 coverage.out
 target/
 test-output/
+__pycache__/
 dist/
 aihmc-service-linux-amd64.tar.gz
 aihmc-service-linux-amd64.tar.gz.sha256

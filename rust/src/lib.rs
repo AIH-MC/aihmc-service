@@ -1,5 +1,8 @@
+pub mod auth;
 pub mod config;
 pub mod database;
+pub mod httpapi;
 pub mod protocol;
+pub mod server;
 pub mod store;
 pub mod ucenter;

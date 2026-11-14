@@ -8,6 +8,8 @@ publish = false
 [dependencies]
 axum = "0.8.9"
 base64 = "0.22"
+hyper = { version = "1", features = ["server", "http1"] }
+hyper-util = { version = "0.1", features = ["tokio"] }
 md5 = "0.8"
 regex = "1"
 reqwest = { version = "0.13.5", default-features = false, features = ["json", "rustls-no-provider"] }
@@ -19,6 +21,7 @@ sha1 = { version = "0.10", features = ["oid"] }
 sha2 = "0.10"
 sqlx = { version = "0.9.0", default-features = false, features = ["runtime-tokio", "tls-rustls-ring", "mysql"] }
 tokio = { version = "1.54.1", features = ["macros", "rt-multi-thread", "net", "signal", "time"] }
+tower = { version = "0.5", features = ["util"] }
 toml = "1.2.1"
 tracing = "0.1"
 tracing-subscriber = { version = "0.3.23", features = ["json"] }
