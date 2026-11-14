@@ -1,0 +1,45 @@
+allow_offline = true
+figura_session = "2d"
+access_token = ""
+extra_skin_domains = [".minecraft.net", "minecraft.net"]
+
+[rsakey]
+public_keyfile = "./keys/public.key"
+private_keyfile = "./keys/private.pem"
+
+[database]
+host = "127.0.0.1"
+port = 3306
+user = "root"
+password = ""
+db_name = "aihmc_auth"
+
+[server]
+host = "0.0.0.0"
+port = 8002
+debug = false
+timeout = 5.0
+
+[[servers]]
+name = "Official"
+root_url = "https://mojang.com"
+api_type = "mojang"
+enabled = true
+
+[[servers]]
+name = "AI-Hobbyist"
+root_url = "https://api.aihmc.top"
+api_type = "aihmc"
+enabled = true
+
+[[servers]]
+name = "LittleSkin"
+root_url = "https://littleskin.cn"
+api_type = "blessingskin"
+enabled = true
+
+[[servers]]
+name = "Ely.by"
+root_url = "https://ely.by"
+api_type = "elyby"
+enabled = true
