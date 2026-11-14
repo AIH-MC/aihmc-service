@@ -122,7 +122,7 @@ pub struct Auth {
     pub login_record_retention: PositiveDuration,
 }
 
-#[derive(Default, Deserialize)]
+#[derive(Clone, Default, Deserialize)]
 #[serde(default, deny_unknown_fields)]
 pub struct Textures {
     pub directory: PathBuf,

@@ -19,6 +19,7 @@ pub enum Error {
     Store(store::Error),
     Upstream,
     Protocol,
+    Material,
 }
 
 impl Error {
@@ -447,5 +448,24 @@ impl Service {
             },
             "skinDomains": domains, "signaturePublickey": self.runtime.public_key_pem,
         }))
+    }
+
+    pub async fn delete_user(&self, key: &str, uid: i64) -> Result<(u16, &'static str), Error> {
+        if !protocol::php_truthy_query(key) || uid == 0 {
+            return Ok((400, "超级操作密钥或用户UID不能为空"));
+        }
+        if key != self.runtime.super_key {
+            return Ok((403, "超级操作密钥错误"));
+        }
+        let deleted = self
+            .store
+            .transaction::<_, Error>(move |mut queries| {
+                Box::pin(async move { Ok(queries.delete_user(uid).await?) })
+            })
+            .await?;
+        if !deleted {
+            return Ok((404, "用户不存在，或未登录过 Minecraft 服务器"));
+        }
+        Ok((200, "删除成功"))
     }
 }

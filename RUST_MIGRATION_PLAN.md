@@ -1,6 +1,6 @@
 # AIHMC 认证服务 Rust 迁移计划书
 
-日期：2026-11-14。状态：R0 至 R3 本地自动验收通过，后续进度及提交状态见 `docs/RUST_MIGRATION_PROGRESS.md`。Actions 为非阻塞人工验收。
+日期：2026-11-14。状态：R0 至 R4 本地自动验收通过，后续进度及提交状态见 `docs/RUST_MIGRATION_PROGRESS.md`。Actions 为非阻塞人工验收。
 
 实施目标是将当前 Go 服务迁移至 Rust，保留现有业务行为与数据，将当前 Go 版本完整存档至独立目录，并配置现有 GitHub Actions 流程构建 Linux x64、Linux ARM64、Windows x64 发布包。本文将用户所述 Linux ARM 解释为 ARM64，不包含 ARMv7。用户已授权逐阶段验证、提交和推送；本地仅编译和测试 Windows x64。
 

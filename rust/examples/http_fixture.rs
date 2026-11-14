@@ -6,7 +6,7 @@ use aihmc_api::{
     config::RuntimeConfig,
     database, httpapi, server,
     store::Store,
-    ucenter,
+    texture, ucenter,
 };
 
 struct FixtureMaterials;
@@ -39,6 +39,9 @@ async fn main() {
     let store = Store::new(pool, runtime.config.database.query_timeout.0);
     let users = ucenter::Client::new(&runtime).expect("UCenter client");
     let listen = runtime.config.server.listen.clone();
+    let avatars = Arc::new(
+        texture::Service::new(&runtime.config, Arc::new(store.clone())).expect("avatar dependency"),
+    );
     let service = Arc::new(Service::new(
         runtime.clone(),
         store,
@@ -51,7 +54,7 @@ async fn main() {
     println!("fixture listening {}", listener.local_addr().unwrap());
     server::serve(
         listener,
-        httpapi::router(service),
+        httpapi::router(service, avatars),
         &runtime.config.server,
         std::future::pending(),
     )

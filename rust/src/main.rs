@@ -1,8 +1,8 @@
-use std::path::PathBuf;
+use std::{path::PathBuf, sync::Arc};
 
-use aihmc_api::{config::RuntimeConfig, database, server};
-use axum::{Json, Router, routing::any};
-use serde_json::json;
+use aihmc_api::{
+    auth, config::RuntimeConfig, database, httpapi, server, store::Store, texture, ucenter,
+};
 use tracing::Level;
 
 #[tokio::main]
@@ -35,7 +35,7 @@ async fn run() -> Result<(), String> {
             _ => return Err("unknown command-line argument; use --help".into()),
         }
     }
-    let runtime = RuntimeConfig::load(&path)?;
+    let runtime = Arc::new(RuntimeConfig::load(&path)?);
     let pool = database::open(&runtime).await?;
     if check {
         pool.close().await;
@@ -56,10 +56,19 @@ async fn run() -> Result<(), String> {
     } else {
         logger.with_ansi(false).init();
     }
-    // R1 exposes only the existing root notice. Business routes follow in R3/R4.
-    let app = Router::new().route("/", any(|| async {
-        Json(json!({"message": "This is AI Hobbyist MC API, please use the correct endpoint to access the API."}))
-    }));
+    let store = Store::new(pool.clone(), runtime.config.database.query_timeout.0);
+    let materials = Arc::new(
+        texture::Service::new(&runtime.config, Arc::new(store.clone()))
+            .map_err(|_| "cannot initialize material client")?,
+    );
+    let users = ucenter::Client::new(&runtime).map_err(|_| "cannot initialize UCenter client")?;
+    let service = Arc::new(auth::Service::new(
+        runtime.clone(),
+        store,
+        users,
+        materials.clone(),
+    ));
+    let app = httpapi::router(service, materials);
     let listen = if runtime.config.server.listen.starts_with(':') {
         format!("0.0.0.0{}", runtime.config.server.listen)
     } else {

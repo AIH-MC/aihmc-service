@@ -1,14 +1,16 @@
 """Compare real Go/Rust HTTP handlers against one isolated database, serially.
 
-The two fixture executables use a controlled material provider. Texture download,
-image processing and production executable wiring are verified in R4/R5.
+Default mode compares controlled handler fixtures. --production compares the
+actual service executables, including material download, avatars and deletion.
 """
 
 import argparse
 import base64
 import concurrent.futures
+import collections
 import hashlib
 import http.server
+import io
 import json
 import pathlib
 import queue
@@ -32,6 +34,7 @@ def parse_arguments():
     parser.add_argument("--mysql", required=True, type=pathlib.Path)
     parser.add_argument("--output", required=True, type=pathlib.Path)
     parser.add_argument("--concurrency-only", action="store_true")
+    parser.add_argument("--production", action="store_true")
     return parser.parse_args()
 
 
@@ -117,6 +120,31 @@ def upstream_handler(config, base):
         def log_message(self, *_):
             pass
 
+        def do_GET(self):
+            root = pathlib.Path(__file__).resolve().parent.parent
+            if self.path.startswith("/csl/"):
+                data = json.dumps(
+                    {"skins": {"slim": "fixture-skin"}, "cape": "fixture-cape"}
+                ).encode()
+                content_type = "application/json"
+            elif self.path.startswith("/textures/"):
+                data = (root / "tests/testdata/skin-64.png").read_bytes()
+                content_type = "image/png"
+            elif self.path == "/helm/missing-uuid/20":
+                data = (root / "tests/testdata/avatar-64-20.png").read_bytes()
+                content_type = "image/png"
+            elif self.path == "/helm/corrupt/20":
+                data = b"not a PNG"
+                content_type = "image/png"
+            else:
+                self.send_error(404)
+                return
+            self.send_response(200)
+            self.send_header("content-type", content_type)
+            self.send_header("content-length", str(len(data)))
+            self.end_headers()
+            self.wfile.write(data)
+
         def do_POST(self):
             timestamp = self.headers["t"]
             source = config["ucenter"]["nonce"] + timestamp + secret
@@ -172,13 +200,36 @@ class Fixture:
             encoding="utf-8",
         )
         lines = queue.Queue()
-        threading.Thread(
-            target=lambda: lines.put(self.process.stdout.readline()), daemon=True
-        ).start()
+        self.errors = collections.deque(maxlen=200)
+
+        def read_output():
+            announced = False
+            for line in self.process.stdout:
+                address = None
+                if line.startswith("fixture listening "):
+                    address = line.strip().removeprefix("fixture listening ")
+                else:
+                    try:
+                        event = json.loads(line)
+                    except json.JSONDecodeError:
+                        continue
+                    fields = event.get("fields", event)
+                    if event.get("level") == "ERROR":
+                        self.errors.append(line.strip())
+                    if fields.get("message", fields.get("msg")) == "server started":
+                        address = fields["address"]
+                if address and not announced:
+                    lines.put(address)
+                    announced = True
+            if not announced:
+                lines.put(None)
+
+        self.reader = threading.Thread(target=read_output, daemon=True)
+        self.reader.start()
         try:
-            line = lines.get(timeout=15).strip()
-            assert line.startswith("fixture listening "), "fixture did not start"
-            self.url = "http://" + line.removeprefix("fixture listening ")
+            address = lines.get(timeout=15)
+            assert address, "service did not start"
+            self.url = "http://" + address
         except Exception:
             self.close()
             raise
@@ -187,11 +238,14 @@ class Fixture:
         if self.process.poll() is None:
             self.process.kill()
         self.process.wait(timeout=10)
+        self.reader.join(timeout=2)
         self.process.stdout.close()
         diagnostic = self.process.stderr.read()
         self.process.stderr.close()
         if diagnostic:
             print(f"{self.name}: {diagnostic.strip()}", flush=True)
+        for error in self.errors:
+            print(f"{self.name}: {error}", flush=True)
 
 
 def request(fixture, method, path, body=None, expected=200, headers=None, raw=None):
@@ -236,7 +290,7 @@ def token_body(login):
 
 
 class Sequence:
-    def __init__(self, fixture, database, bridge, config):
+    def __init__(self, fixture, database, bridge, config, production=False):
         self.fixture = fixture
         self.database = database
         self.bridge = bridge
@@ -244,6 +298,32 @@ class Sequence:
         self.records = []
         self.replacements = {}
         self.started = int(time.time())
+        self.production = production
+
+    def avatar(self, label, path):
+        from PIL import Image
+
+        with urllib.request.urlopen(self.fixture.url + path, timeout=15) as response:
+            assert (
+                response.status == 200
+                and response.headers["content-type"] == "image/png"
+            )
+            data = response.read()
+        decoded = Image.open(io.BytesIO(data)).convert("RGBA")
+        root = pathlib.Path(__file__).resolve().parent.parent
+        with Image.open(root / "tests/testdata/avatar-64-20.png") as reference:
+            assert decoded.size == reference.size == (20, 20)
+            assert decoded.tobytes() == reference.convert("RGBA").tobytes()
+        self.records.append(
+            {
+                "case": label,
+                "status": 200,
+                "body": {
+                    "size": [20, 20],
+                    "rgba_sha256": hashlib.sha256(decoded.tobytes()).hexdigest(),
+                },
+            }
+        )
 
     def send(self, label, method, path, body=None, expected=200, **kwargs):
         response = request(self.fixture, method, path, body, expected, **kwargs)
@@ -474,6 +554,119 @@ class Sequence:
             "/mcauth/users/profiles/minecraft/" + urllib.parse.quote("迁移用户"),
         )
         assert queried["id"] == chinese["selectedProfile"]["id"]
+        if self.production:
+            deletion = self.send(
+                "delete-target-login",
+                "POST",
+                auth + "authenticate",
+                login_body(client="delete-client"),
+            )
+            self.capture_login(deletion)
+            uuid = deletion["selectedProfile"]["id"]
+            self.avatar("local-avatar-pixels", "/helm/" + uuid + "/20")
+            self.avatar("remote-avatar-pixels", "/helm/missing-uuid/20")
+            self.send("avatar-method", "POST", "/helm/" + uuid + "/20", {}, 405)
+            self.send("avatar-size-zero", "GET", "/helm/" + uuid + "/0", expected=400)
+            self.send("avatar-size-missing", "GET", "/helm/" + uuid, expected=400)
+            self.send("avatar-corrupt-remote", "GET", "/helm/corrupt/20", expected=500)
+            self.send("delete-method", "GET", "/system/deluser", expected=405)
+            secret_config = tomllib.loads(self.config.read_text(encoding="utf-8"))
+            admin_key = (
+                (self.config.parent / secret_config["admin"]["super_key_file"])
+                .read_text(encoding="utf-8")
+                .rstrip("\r\n")
+            )
+            self.send(
+                "delete-key-missing",
+                "POST",
+                "/system/deluser",
+                {"super_token": "", "prarms": {"uid": 970001}},
+                400,
+            )
+            self.send(
+                "delete-key-wrong",
+                "POST",
+                "/system/deluser",
+                {"super_token": "wrong", "prarms": {"uid": 970001}},
+                403,
+            )
+            self.send(
+                "delete-legacy-field",
+                "POST",
+                "/system/deluser",
+                {"super_token": admin_key, "params": {"uid": 970001}},
+                400,
+            )
+            self.send(
+                "delete-user-missing",
+                "POST",
+                "/system/deluser",
+                {"super_token": admin_key, "prarms": {"uid": 999999999}},
+                404,
+            )
+            before_delete = self.database.snapshot()
+            self.database.query("""
+                DELIMITER //
+                CREATE TRIGGER rust_contract_delete_failure
+                BEFORE DELETE ON mcauth_textures FOR EACH ROW
+                BEGIN
+                    IF OLD.uid=970001 THEN
+                        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT='synthetic deletion failure';
+                    END IF;
+                END//
+                DELIMITER ;
+            """)
+            try:
+                self.send(
+                    "delete-failure-rollback",
+                    "POST",
+                    "/system/deluser",
+                    {"super_token": admin_key, "prarms": {"uid": 970001}},
+                    500,
+                )
+                assert (
+                    self.database.snapshot() == before_delete
+                ), "HTTP deletion failure retained partial writes"
+                self.send(
+                    "delete-rollback-token",
+                    "POST",
+                    auth + "validate",
+                    token_body(deletion),
+                    204,
+                )
+            finally:
+                self.database.query("DROP TRIGGER rust_contract_delete_failure")
+            self.send(
+                "delete-user",
+                "POST",
+                "/system/deluser",
+                {"super_token": admin_key, "prarms": {"uid": "970001"}},
+            )
+            self.send(
+                "deleted-token", "POST", auth + "validate", token_body(deletion), 403
+            )
+            self.send(
+                "other-user-token", "POST", auth + "validate", token_body(chinese), 204
+            )
+            self.send(
+                "deleted-name",
+                "GET",
+                "/mcauth/users/profiles/minecraft/MigrationHTTP",
+                expected=404,
+            )
+            for table in ["mcauth_profiles", "mcauth_tokens", "mcauth_textures"]:
+                assert (
+                    self.database.query(
+                        f"SELECT COUNT(*) FROM {table} WHERE uid=970001"
+                    )
+                    == "0"
+                )
+            assert (
+                self.database.query(
+                    "SELECT COUNT(*) FROM mcauth_logins WHERE playername='MigrationHTTP'"
+                )
+                == "0"
+            )
         snapshots = self.normalize(self.database.snapshot())
         return {"responses": self.normalize(self.records), "database": snapshots}
 
@@ -545,12 +738,45 @@ def main():
             f'endpoint = "http://127.0.0.1:{upstream.server_port}"',
             fixture_text,
         )
-        fixture_config.write_text(fixture_text, encoding="utf-8")
+        material_directories = {}
+        if args.production:
+            source = f"http://127.0.0.1:{upstream.server_port}"
+            for field in ["mojang_base_url", "crafatar_base_url", "crafthead_base_url"]:
+                fixture_text = re.sub(
+                    rf"(?m)^{field}\s*=.*$", f'{field} = "{source}"', fixture_text
+                )
+            database.query("DELETE FROM texture_apis WHERE id=-970001")
+            database.query(
+                f"INSERT INTO texture_apis (id,api_url,added_by,added_date) VALUES (-970001,'{source}','contract-fixture',0)"
+            )
+            for name in ["go", "rust"]:
+                material_directories[name] = directory / (name + "-textures")
+                material_directories[name].mkdir()
+            go_text = re.sub(
+                r"(?m)^directory\s*=.*$",
+                f'directory = "{material_directories["go"].as_posix()}"',
+                fixture_text,
+            )
+            fixture_config.write_text(go_text, encoding="utf-8")
+        else:
+            fixture_config.write_text(fixture_text, encoding="utf-8")
         fixtures = []
         try:
             go = Fixture([str(args.go.resolve()), "--config", str(fixture_config)])
             fixtures.append(go)
-            rust = Fixture([str(args.rust.resolve()), str(fixture_config)])
+            if args.production:
+                rust_text = re.sub(
+                    r"(?m)^directory\s*=.*$",
+                    f'directory = "{material_directories["rust"].as_posix()}"',
+                    fixture_text,
+                )
+                fixture_config.write_text(rust_text, encoding="utf-8")
+            rust_command = (
+                [str(args.rust.resolve())]
+                + (["--config"] if args.production else [])
+                + [str(fixture_config)]
+            )
+            rust = Fixture(rust_command)
             fixtures.append(rust)
             if args.concurrency_only:
                 for fixture in fixtures:
@@ -559,13 +785,24 @@ def main():
                     print(f"{fixture.name}: isolated concurrency passed", flush=True)
                 return
             results = []
-            for fixture in [go, rust]:
+            for name, fixture in [("go", go), ("rust", rust)]:
                 database.clean()
                 results.append(
                     Sequence(
-                        fixture, database, args.bridge.resolve(), fixture_config
+                        fixture,
+                        database,
+                        args.bridge.resolve(),
+                        fixture_config,
+                        args.production,
                     ).run()
                 )
+                if args.production:
+                    files = {
+                        file.name: hashlib.sha256(file.read_bytes()).hexdigest()
+                        for file in material_directories[name].iterdir()
+                    }
+                    assert set(files) == {"fixture-skin", "fixture-cape"}
+                    results[-1]["material_files"] = files
                 print(
                     f"{fixture.name}: {len(results[-1]['responses'])} sequential HTTP cases passed",
                     flush=True,
@@ -604,7 +841,7 @@ def main():
             )
             rust.close()
             fixtures.remove(rust)
-            rust = Fixture([str(args.rust.resolve()), str(fixture_config)])
+            rust = Fixture(rust_command)
             fixtures.append(rust)
             request(
                 rust, "POST", "/mcauth/authserver/validate", token_body(back_to_go), 204
@@ -616,7 +853,7 @@ def main():
                 rust, "GET", chinese_path
             )
             result = {
-                "stage": "R3",
+                "stage": "R4" if args.production else "R3",
                 "platform": "windows-x64",
                 "result": "PASS",
                 "http_cases_per_runtime": len(results[0]["responses"]),
@@ -625,8 +862,14 @@ def main():
                 "concurrent_refresh_each_runtime": "PASS",
                 "go_rust_live_token_interoperability": "PASS",
                 "restarted_rust_process_reads_existing_tokens_and_identity": "PASS",
-                "scope": "real HTTP handlers + real isolated DB + controlled UCenter and materials",
-                "production_material_and_binary_wiring": "R4 pending",
+                "scope": (
+                    "actual service executables + isolated DB + controlled upstreams"
+                    if args.production
+                    else "real HTTP handlers + real isolated DB + controlled UCenter and materials"
+                ),
+                "production_material_and_binary_wiring": (
+                    "PASS" if args.production else "R4 pending"
+                ),
                 "comparison": results[1],
             }
             args.output.parent.mkdir(parents=True, exist_ok=True)
@@ -647,6 +890,8 @@ def main():
             for fixture in fixtures:
                 fixture.close()
             database.clean()
+            if args.production:
+                database.query("DELETE FROM texture_apis WHERE id=-970001")
             fixture_config.unlink(missing_ok=True)
             upstream.shutdown()
             upstream.server_close()

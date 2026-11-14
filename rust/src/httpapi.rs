@@ -17,24 +17,32 @@ use serde_json::{Value, json};
 use crate::{
     auth::{Error, Service},
     protocol::Profile,
+    texture::AvatarProvider,
 };
 
 static UUID_PATH: LazyLock<Regex> =
     LazyLock::new(|| Regex::new("profile/([a-f0-9]{32})").expect("valid profile expression"));
 
-pub fn router(service: Arc<Service>) -> Router {
-    Router::new().fallback(dispatch).with_state(service)
+struct HttpState {
+    service: Arc<Service>,
+    avatars: Arc<dyn AvatarProvider>,
+}
+
+pub fn router(service: Arc<Service>, avatars: Arc<dyn AvatarProvider>) -> Router {
+    Router::new()
+        .fallback(dispatch)
+        .with_state(Arc::new(HttpState { service, avatars }))
 }
 
 async fn dispatch(
-    State(service): State<Arc<Service>>,
+    State(state): State<Arc<HttpState>>,
     ConnectInfo(peer): ConnectInfo<SocketAddr>,
     request: Request,
 ) -> Response<Body> {
     let started = Instant::now();
     let method = request.method().clone();
     let path = request.uri().path().to_owned();
-    let result = handle(&service, peer, request).await;
+    let result = handle(&state, peer, request).await;
     let response = match result {
         Ok(response) => response,
         Err(error) => {
@@ -49,6 +57,7 @@ async fn dispatch(
                     let category = match other {
                         Error::Store(_) => "database",
                         Error::Upstream => "upstream",
+                        Error::Material => "material",
                         _ => "protocol",
                     };
                     tracing::error!(%path, error_type = category, "request failed");
@@ -64,10 +73,11 @@ async fn dispatch(
 }
 
 async fn handle(
-    service: &Service,
+    state: &HttpState,
     peer: SocketAddr,
     request: Request,
 ) -> Result<Response<Body>, Error> {
+    let service = &state.service;
     let uri = request.uri().clone();
     let raw = uri.path_and_query().map(|uri| uri.as_str()).unwrap_or("/");
     let method = request.method();
@@ -199,6 +209,58 @@ async fn handle(
             }
             let name = query_decode(parts.last().copied().unwrap_or("/"))?;
             json_response(200, &service.name(name).await?)
+        }
+        _ if raw.starts_with("/helm/") => {
+            require_method(method, Method::GET)?;
+            let parts: Vec<_> = uri.path().trim_matches('/').split('/').collect();
+            if parts.len() < 3 {
+                return Err(Error::api(
+                    400,
+                    "IllegalArgumentException",
+                    "Avatar UUID and size are required.",
+                ));
+            }
+            let size = parts[2]
+                .parse::<i64>()
+                .ok()
+                .filter(|size| *size > 0)
+                .ok_or_else(|| {
+                    Error::api(
+                        400,
+                        "IllegalArgumentException",
+                        "Avatar size must be a positive integer.",
+                    )
+                })?;
+            let size = u32::try_from(size).map_err(|_| Error::Material)?;
+            let data = state.avatars.avatar(parts[1], size).await?;
+            Ok(Response::builder()
+                .status(200)
+                .header("content-type", "image/png")
+                .body(Body::from(data))
+                .expect("known PNG response"))
+        }
+        "/system/deluser" => {
+            require_method(method, Method::POST)?;
+            let body = read_object(service, request).await?;
+            let parameters = field(&body, "prarms");
+            if !parameters.is_null() && !parameters.is_object() {
+                return Err(bad_json());
+            }
+            let uid = match field(parameters, "uid") {
+                Value::Null => 0,
+                Value::Number(number) => number.as_i64().ok_or_else(bad_json)?,
+                Value::String(text) => {
+                    if !matches!(serde_json::from_str::<Value>(text), Ok(Value::Number(_))) {
+                        return Err(bad_json());
+                    }
+                    text.parse::<i64>().map_err(|_| bad_json())?
+                }
+                _ => return Err(bad_json()),
+            };
+            let (status, message) = service
+                .delete_user(&string(&body, "super_token")?, uid)
+                .await?;
+            json_response(status, &json!({"msg": message}))
         }
         _ => json_response(200, &service.metadata().await?),
     }

@@ -1,0 +1,43 @@
+{
+  "package_sha256": "4e97945f2e99b18f59f9ff42886c7e72c2cde4582c78cf65d941ca273faa3c66",
+  "stage": "R4",
+  "normalized_http_database_and_material_files": "PASS",
+  "real_material_source_and_file_tests": 7,
+  "deletion_mid_transaction_failure_and_rollback": "PASS (temporary isolated-database trigger, removed)",
+  "logs": [
+    {
+      "sha256": "5c24121d847dc7af15399863b177162d3ef3ffc226c25c10eda6bf354757b1de",
+      "log": ".local/rust-migration/logs/r4-all-tests.log"
+    },
+    {
+      "sha256": "c059c184ce10d0b9096ddd2afe85c945347e3c82cd069698efc36da35125706f",
+      "log": ".local/rust-migration/logs/r4-production-contract.log"
+    },
+    {
+      "sha256": "6ef32fb32257c10b7792507625e18ae52ad43897613b6f1f8103e3b02c7ec54f",
+      "log": ".local/rust-migration/logs/r4-runtime-check.log"
+    },
+    {
+      "sha256": "a2558e2acdb460c214e2975b331b8f779c00d06b896520a31125303ee5aa67a2",
+      "log": "test-output/windows-x64/logs/clippy.log"
+    },
+    {
+      "sha256": "0915ae48f0d5d20b2e62bca04310abab89f287b06a010997aabe8479dfa8475f",
+      "log": "test-output/windows-x64/logs/release.log"
+    },
+    {
+      "sha256": "bb5c5248bde31e263b942c959d2479087f6967212d55b51ef4812cd994121821",
+      "log": "test-output/windows-x64/logs/smoke.log"
+    }
+  ],
+  "gd_pixel_reference_cases": 10,
+  "target": "x86_64-pc-windows-msvc",
+  "release_package_cli_and_graceful_shutdown": "PASS",
+  "concurrency_token_interop_and_process_restart": "PASS",
+  "actual_release_executable_http_cases_per_runtime": 63,
+  "all_tests": {
+    "passed": 27,
+    "ignored": 0
+  },
+  "actions_linux": "MANUAL/PENDING; agent must not run; non-blocking"
+}
