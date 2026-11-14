@@ -1,0 +1,12 @@
+{
+  "date": "2026-10-22",
+  "source": "existing local config.toml and secret references",
+  "tls_verification_enabled": true,
+  "application_token_http_status": 200,
+  "invalid_credential_http_status": 200,
+  "invalid_credentials_mapped_correctly": true,
+  "account_used": "fresh random nonexistent fixture username",
+  "successful_real_user_login": "MANUAL/PENDING",
+  "real_launcher_and_server_join": "MANUAL/PENDING",
+  "production_cutover": "MANUAL/PENDING"
+}

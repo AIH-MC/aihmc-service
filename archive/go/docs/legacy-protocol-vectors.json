@@ -1,0 +1,22 @@
+{
+    "timestamp": 1700000000,
+    "username": "MigrationPlayer",
+    "email": "migration@example.com",
+    "uid": 900001,
+    "clientToken": "fixture-client-token",
+    "accessToken": "ZDkyMzQ3NDkwNGNiZDk4NTZlYWMwYmNjZWU3NWY1YmEyNDkyMGRlY2Y4M2Y2OTYwYjgwZjczN2EyOGVlYWZjMQ==",
+    "profileId": "21883b3cae6100acb80d74f4367f43dc",
+    "refreshTimestamp": 1792675386,
+    "refreshToken": "MDdlZDgxNzBkZTNhM2YzOTZiNDhmMzMyZTA0OTJkOGQ=",
+    "textureValue": "ewogICAgInRpbWVzdGFtcCI6IDE3MDAwMDAwMDAsCiAgICAicHJvZmlsZUlkIjogImZpeHR1cmUtaWQiLAogICAgInByb2ZpbGVOYW1lIjogIui\/geenu+a1i+ivlSIsCiAgICAidGV4dHVyZXMiOiB7CiAgICAgICAgIlNLSU4iOiB7CiAgICAgICAgICAgICJ1cmwiOiAiaHR0cHM6XC9cL2FwaS5haWhtYy50b3BcL3RleHR1cmVzXC9maXh0dXJlLXNraW4iLAogICAgICAgICAgICAibWV0YWRhdGEiOiB7CiAgICAgICAgICAgICAgICAibW9kZWwiOiAic2xpbSIKICAgICAgICAgICAgfQogICAgICAgIH0sCiAgICAgICAgIkNBUEUiOiB7CiAgICAgICAgICAgICJ1cmwiOiAiaHR0cHM6XC9cL2FwaS5haWhtYy50b3BcL3RleHR1cmVzXC9maXh0dXJlLWNhcGUiCiAgICAgICAgfQogICAgfQp9",
+    "ucenter": {
+        "nonce": "fixture-nonce",
+        "secret": "fixture-secret",
+        "signature": "NWQ1NjJiMTViMDIwZmRmM2Q4Yjk1NzgwMmY4MWEwN2FlMWI2YTg5MmQyMzIzNzc5M2M3YjQzN2M3ZDI4OWU4MA=="
+    },
+    "rsa": {
+        "value": "eyJwcm9maWxlTmFtZSI6Iui\/geenu+a1i+ivlSIsInRleHR1cmVzIjp7fX0=",
+        "signature": "uOd2oReEo8c0dk3WlCS2LPIb4rgmhhDki12419sb7DSVw8yno0Jn1Fr6RckcBxXzzWPWfLtEdCAqhcn2D5oViGglXlZDV0U9+Za2KhsqvGQSJZpVBT+fkpeHTKK\/BjAK4hPJzP11yq0lwxtJ7QASokATwlyIXXsTVKxPgPnL\/GcUpE3hSIgWZqoQ2RQegVF1XD7psxt5AeIYvyCIOVIkhb7N4zeVS841ISf\/4qSSZWDJvXzMPW4\/Ps6gsaz5YznmKDaExkxqhiRuMj8A8SLYHwygRCO6shGM1nUF8lqXxb+H2juq+71T21y7o+ZsjLDUGquV5t0seMy\/0Cn1diaJcg==",
+        "publicKey": "-----BEGIN PUBLIC KEY-----\r\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAurGXmPwDY+SmPosIEHu1\r\nK+fKPXNmsflj3oVVG7gsQEqWSVFnWYTK16M4Uyg3iGeXm3RGBSlnr0hUHLy8d7zi\r\n2jjYXJOZBjo8SJjFEXSoaj5nUIv3XJYMI\/MzCppHnI7I4NrlLkjdkB4r6g8unUn5\r\n+N1wGWZKqM0nfqQda5Lcr9lF\/5qBxBX+jaznVQd6CfnC98\/enK2YomUjdM7YOH33\r\n1npvBpWJUPD7Q0JGSYnltCvD1J0GvhEcqZpb9FHwMhklu9ZJjbhrLCDk\/Xd3lgrm\r\nNToTwK5eqPOZzVh\/1nNJsFk\/9LRHJ+I9rxjp3LDqySPQFRjN2Pti3ttcMz7QbJ1u\r\nQQIDAQAB\r\n-----END PUBLIC KEY-----\r\n"
+    }
+}

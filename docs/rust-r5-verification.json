@@ -1,0 +1,16 @@
+{
+  "format_clippy_release_package_smoke": "PASS",
+  "stage": "R5",
+  "result": "PASS",
+  "archive_files_sha256_verified": 60,
+  "production_http_cases_each_runtime": 63,
+  "php_archive": "unchanged",
+  "rust_full_tests_including_ignored": 27,
+  "actions_and_linux": "MANUAL/PENDING; agent must not run; nonblocking",
+  "workflow_static_validation": "PASS",
+  "comparison": "rust-r5-contract-comparison.json",
+  "runtime_config_database_listen_conflict_shutdown": "PASS",
+  "go_archive_top_level_tests": 33,
+  "package_sha256": "1a8a989ab0314ad1605baa4c7387b86c73fb3d21532d1ba15296d384bf8050c9",
+  "platform": "windows-x64"
+}

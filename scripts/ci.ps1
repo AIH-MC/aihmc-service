@@ -4,7 +4,7 @@ param(
     [Parameter(Mandatory = $true)]
     [ValidateSet('windows-x64', 'linux-x64', 'linux-arm64')]
     [string]$Platform,
-    [string]$ProjectDirectory = 'rust'
+    [string]$ProjectDirectory = '.'
 )
 
 $ErrorActionPreference = 'Stop'

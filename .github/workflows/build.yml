@@ -1,4 +1,4 @@
-name: Build Go and Rust migration
+name: Build Rust (manual)
 
 on:
   workflow_dispatch:
@@ -7,83 +7,10 @@ permissions:
   contents: read
 
 concurrency:
-  group: build-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  group: build-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        shell: pwsh
-    env:
-      GOOS: linux
-      GOARCH: amd64
-      CGO_ENABLED: '0'
-    steps:
-      - name: Checkout
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - name: Set up Go
-        uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
-        with:
-          go-version-file: go.mod
-      - name: Download and verify dependencies
-        run: |
-          & go mod download 2>&1 | Tee-Object -FilePath 'build.log'
-          $buildExitCode = $LASTEXITCODE
-          if ($buildExitCode -ne 0) {
-              Get-Content -LiteralPath 'build.log'
-              exit $buildExitCode
-          }
-          & go mod verify 2>&1 | Tee-Object -FilePath 'build.log' -Append
-          $buildExitCode = $LASTEXITCODE
-          if ($buildExitCode -ne 0) {
-              Get-Content -LiteralPath 'build.log'
-              exit $buildExitCode
-          }
-      - name: Build Linux amd64
-        run: |
-          New-Item -ItemType Directory -Path 'dist' -Force | Out-Null
-          & go build -trimpath -ldflags '-s -w' -o ./dist/aihmc-api ./cmd/aihmc-api 2>&1 | Tee-Object -FilePath 'build.log' -Append
-          $buildExitCode = $LASTEXITCODE
-          if ($buildExitCode -ne 0) {
-              Get-Content -LiteralPath 'build.log'
-              exit $buildExitCode
-          }
-          & ./dist/aihmc-api --help 2>&1 | Tee-Object -FilePath 'build.log' -Append
-          $buildExitCode = $LASTEXITCODE
-          if ($buildExitCode -ne 0) {
-              Get-Content -LiteralPath 'build.log'
-              exit $buildExitCode
-          }
-      - name: Package release files
-        run: |
-          Copy-Item -LiteralPath 'config.example.toml', 'README.md' -Destination 'dist/'
-          Copy-Item -LiteralPath 'docs/DEPLOYMENT.md' -Destination 'dist/DEPLOYMENT.md'
-          & tar -czf aihmc-service-linux-amd64.tar.gz -C dist aihmc-api config.example.toml README.md DEPLOYMENT.md 2>&1 | Tee-Object -FilePath 'build.log' -Append
-          $buildExitCode = $LASTEXITCODE
-          if ($buildExitCode -ne 0) {
-              Get-Content -LiteralPath 'build.log'
-              exit $buildExitCode
-          }
-          $artifactHash = (Get-FileHash -LiteralPath 'aihmc-service-linux-amd64.tar.gz' -Algorithm SHA256).Hash.ToLowerInvariant()
-          Set-Content -LiteralPath 'aihmc-service-linux-amd64.tar.gz.sha256' -Value "$artifactHash  aihmc-service-linux-amd64.tar.gz"
-      - name: Upload Linux artifact
-        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
-        with:
-          name: aihmc-service-linux-amd64
-          path: |
-            aihmc-service-linux-amd64.tar.gz
-            aihmc-service-linux-amd64.tar.gz.sha256
-          if-no-files-found: error
-      - name: Upload build log
-        if: always()
-        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
-        with:
-          name: build-log
-          path: build.log
-          if-no-files-found: ignore
-
   rust:
     name: Rust ${{ matrix.platform }}
     runs-on: ${{ matrix.runner }}
@@ -107,7 +34,6 @@ jobs:
     defaults:
       run:
         shell: pwsh
-        working-directory: rust
     steps:
       - name: Checkout current implementation
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -127,8 +53,8 @@ jobs:
           path: |
             ~/.cargo/registry
             ~/.cargo/git
-            rust/target
-          key: rust-${{ runner.os }}-${{ matrix.target }}-1.95.0-${{ hashFiles('rust/Cargo.lock') }}
+            target
+          key: rust-${{ runner.os }}-${{ matrix.target }}-1.95.0-${{ hashFiles('Cargo.lock') }}
       - name: Install native musl build tools
         if: runner.os == 'Linux'
         run: |
@@ -150,11 +76,10 @@ jobs:
               $env:CC = 'musl-gcc'
               $env:LC_ALL = 'C'
           }
-          ../scripts/ci.ps1 -Target '${{ matrix.target }}' -Platform '${{ matrix.platform }}'
+          ./scripts/ci.ps1 -Target '${{ matrix.target }}' -Platform '${{ matrix.platform }}'
       - name: Upload verified release package
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
-          name: aihmc-service-${{ matrix.platform }}
           path: test-output/${{ matrix.platform }}/artifacts/aihmc-service-${{ matrix.platform }}.${{ matrix.extension }}
           archive: false
           if-no-files-found: error
@@ -173,6 +98,6 @@ jobs:
           name: rust-logs-${{ matrix.platform }}
           path: |
             test-output/${{ matrix.platform }}/logs/*
-            rust/build.log
+            build.log
           if-no-files-found: ignore
           retention-days: 14

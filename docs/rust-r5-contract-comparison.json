@@ -1,0 +1,807 @@
+{
+  "stage": "R5",
+  "platform": "windows-x64",
+  "result": "PASS",
+  "http_cases_per_runtime": 63,
+  "normalized_http_and_database_equal": true,
+  "eight_concurrent_first_logins_each_runtime": "PASS",
+  "concurrent_refresh_each_runtime": "PASS",
+  "go_rust_live_token_interoperability": "PASS",
+  "restarted_rust_process_reads_existing_tokens_and_identity": "PASS",
+  "scope": "actual service executables + isolated DB + controlled upstreams",
+  "production_material_and_binary_wiring": "PASS",
+  "comparison": {
+    "responses": [
+      {
+        "case": "root",
+        "status": 200,
+        "body": {
+          "message": "This is AI Hobbyist MC API, please use the correct endpoint to access the API."
+        }
+      },
+      {
+        "case": "root-post",
+        "status": 200,
+        "body": {
+          "message": "This is AI Hobbyist MC API, please use the correct endpoint to access the API."
+        }
+      },
+      {
+        "case": "metadata:/mcauth",
+        "status": 200,
+        "body": {
+          "meta": {
+            "serverName": "AIHMC API",
+            "implementationName": "aihmc-api-go",
+            "implementationVersion": "0.1.0",
+            "links": {
+              "homepage": "https://www.example.com",
+              "register": "https://www.example.com/register"
+            },
+            "feature.non_email_login": true
+          },
+          "skinDomains": [
+            ".example.com"
+          ],
+          "signaturePublickey": "-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAurZBVl2KYv39Q4C6viD3\nkeNzVMhJGjXKZK0x96xec/meKBLIjsdJoJiIQoGDOM31397uCxoDlCo3ZDQFUIuK\nXY02FCt8m3g1ZyyZXwvtIt2vYvlR3TCz7TqsFmp09/zt8x6I3feWIPKzrSoGvLiJ\nB2cJXFKQFhmv1rA2Oxp7aR6Z3sJwQvTIgqvR5Jcf2D9kTb6BO0cbngL6Gc/hVyzc\nyeTjcAXnaj2/8VuzdvnphYoweW/2YHDqPA442Tab1SFtonG28ksN2DhcyqLyeu4K\nbjVBOUPfd7A0wfYQ+vsp4scqM0DRITrJJqnhMhaUfppCkJuHdg/ClQ2krKenBQwI\nVQIDAQAB\n-----END PUBLIC KEY-----"
+        }
+      },
+      {
+        "case": "metadata:/unknown",
+        "status": 200,
+        "body": {
+          "meta": {
+            "serverName": "AIHMC API",
+            "implementationName": "aihmc-api-go",
+            "implementationVersion": "0.1.0",
+            "links": {
+              "homepage": "https://www.example.com",
+              "register": "https://www.example.com/register"
+            },
+            "feature.non_email_login": true
+          },
+          "skinDomains": [
+            ".example.com"
+          ],
+          "signaturePublickey": "-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAurZBVl2KYv39Q4C6viD3\nkeNzVMhJGjXKZK0x96xec/meKBLIjsdJoJiIQoGDOM31397uCxoDlCo3ZDQFUIuK\nXY02FCt8m3g1ZyyZXwvtIt2vYvlR3TCz7TqsFmp09/zt8x6I3feWIPKzrSoGvLiJ\nB2cJXFKQFhmv1rA2Oxp7aR6Z3sJwQvTIgqvR5Jcf2D9kTb6BO0cbngL6Gc/hVyzc\nyeTjcAXnaj2/8VuzdvnphYoweW/2YHDqPA442Tab1SFtonG28ksN2DhcyqLyeu4K\nbjVBOUPfd7A0wfYQ+vsp4scqM0DRITrJJqnhMhaUfppCkJuHdg/ClQ2krKenBQwI\nVQIDAQAB\n-----END PUBLIC KEY-----"
+        }
+      },
+      {
+        "case": "metadata:/mcauth?x=1",
+        "status": 200,
+        "body": {
+          "meta": {
+            "serverName": "AIHMC API",
+            "implementationName": "aihmc-api-go",
+            "implementationVersion": "0.1.0",
+            "links": {
+              "homepage": "https://www.example.com",
+              "register": "https://www.example.com/register"
+            },
+            "feature.non_email_login": true
+          },
+          "skinDomains": [
+            ".example.com"
+          ],
+          "signaturePublickey": "-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAurZBVl2KYv39Q4C6viD3\nkeNzVMhJGjXKZK0x96xec/meKBLIjsdJoJiIQoGDOM31397uCxoDlCo3ZDQFUIuK\nXY02FCt8m3g1ZyyZXwvtIt2vYvlR3TCz7TqsFmp09/zt8x6I3feWIPKzrSoGvLiJ\nB2cJXFKQFhmv1rA2Oxp7aR6Z3sJwQvTIgqvR5Jcf2D9kTb6BO0cbngL6Gc/hVyzc\nyeTjcAXnaj2/8VuzdvnphYoweW/2YHDqPA442Tab1SFtonG28ksN2DhcyqLyeu4K\nbjVBOUPfd7A0wfYQ+vsp4scqM0DRITrJJqnhMhaUfppCkJuHdg/ClQ2krKenBQwI\nVQIDAQAB\n-----END PUBLIC KEY-----"
+        }
+      },
+      {
+        "case": "metadata:/mcauth/",
+        "status": 200,
+        "body": {
+          "meta": {
+            "serverName": "AIHMC API",
+            "implementationName": "aihmc-api-go",
+            "implementationVersion": "0.1.0",
+            "links": {
+              "homepage": "https://www.example.com",
+              "register": "https://www.example.com/register"
+            },
+            "feature.non_email_login": true
+          },
+          "skinDomains": [
+            ".example.com"
+          ],
+          "signaturePublickey": "-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAurZBVl2KYv39Q4C6viD3\nkeNzVMhJGjXKZK0x96xec/meKBLIjsdJoJiIQoGDOM31397uCxoDlCo3ZDQFUIuK\nXY02FCt8m3g1ZyyZXwvtIt2vYvlR3TCz7TqsFmp09/zt8x6I3feWIPKzrSoGvLiJ\nB2cJXFKQFhmv1rA2Oxp7aR6Z3sJwQvTIgqvR5Jcf2D9kTb6BO0cbngL6Gc/hVyzc\nyeTjcAXnaj2/8VuzdvnphYoweW/2YHDqPA442Tab1SFtonG28ksN2DhcyqLyeu4K\nbjVBOUPfd7A0wfYQ+vsp4scqM0DRITrJJqnhMhaUfppCkJuHdg/ClQ2krKenBQwI\nVQIDAQAB\n-----END PUBLIC KEY-----"
+        }
+      },
+      {
+        "case": "metadata-method",
+        "status": 405,
+        "body": {
+          "error": "HTTP/1.1 405 Method Not Allowed",
+          "errorMessage": "不支持的请求方法"
+        }
+      },
+      {
+        "case": "invalid-json",
+        "status": 400,
+        "body": {
+          "error": "IllegalArgumentException",
+          "errorMessage": "Invalid JSON request body."
+        }
+      },
+      {
+        "case": "trailing-json",
+        "status": 400,
+        "body": {
+          "error": "IllegalArgumentException",
+          "errorMessage": "Invalid JSON request body."
+        }
+      },
+      {
+        "case": "missing-account",
+        "status": 400,
+        "body": {
+          "error": "HTTP/1.1 400 Bad Request",
+          "errorMessage": "账号或密码不能为空"
+        }
+      },
+      {
+        "case": "wrong-agent",
+        "status": 403,
+        "body": {
+          "error": "HTTP/1.1 403 Forbidden",
+          "errorMessage": "非法请求"
+        }
+      },
+      {
+        "case": "unicode-agent",
+        "status": 403,
+        "body": {
+          "error": "HTTP/1.1 403 Forbidden",
+          "errorMessage": "非法请求"
+        }
+      },
+      {
+        "case": "wrong-password",
+        "status": 403,
+        "body": {
+          "error": "ForbiddenOperationException",
+          "errorMessage": "Invalid credentials. Invalid username or password."
+        }
+      },
+      {
+        "case": "authenticate",
+        "status": 200,
+        "body": {
+          "accessToken": "<access:1>",
+          "clientToken": "contract-client",
+          "availableProfiles": [
+            {
+              "id": "<uuid:MigrationHTTP>",
+              "name": "MigrationHTTP"
+            }
+          ],
+          "selectedProfile": {
+            "id": "<uuid:MigrationHTTP>",
+            "name": "MigrationHTTP"
+          }
+        }
+      },
+      {
+        "case": "repeated-login",
+        "status": 200,
+        "body": {
+          "accessToken": "<access:1>",
+          "clientToken": "contract-client",
+          "availableProfiles": [
+            {
+              "id": "<uuid:MigrationHTTP>",
+              "name": "MigrationHTTP"
+            }
+          ],
+          "selectedProfile": {
+            "id": "<uuid:MigrationHTTP>",
+            "name": "MigrationHTTP"
+          },
+          "user": {
+            "id": "271879c298d9c1dfe1be69870fe6916b",
+            "properties": []
+          }
+        }
+      },
+      {
+        "case": "validate",
+        "status": 204,
+        "body": null
+      },
+      {
+        "case": "profile:",
+        "status": 200,
+        "body": {
+          "id": "<uuid:MigrationHTTP>",
+          "name": "MigrationHTTP",
+          "properties": [
+            {
+              "name": "textures",
+              "value": {
+                "timestamp": "<current-time>",
+                "profileId": "<uuid:MigrationHTTP>",
+                "profileName": "MigrationHTTP",
+                "textures": {
+                  "SKIN": {
+                    "url": "https://api.example.com/textures/fixture-skin",
+                    "metadata": {
+                      "model": "slim"
+                    }
+                  },
+                  "CAPE": {
+                    "url": "https://api.example.com/textures/fixture-cape"
+                  }
+                }
+              },
+              "signature": "<verified-signature>"
+            }
+          ]
+        }
+      },
+      {
+        "case": "profile:?unsigned=0",
+        "status": 200,
+        "body": {
+          "id": "<uuid:MigrationHTTP>",
+          "name": "MigrationHTTP",
+          "properties": [
+            {
+              "name": "textures",
+              "value": {
+                "timestamp": "<current-time>",
+                "profileId": "<uuid:MigrationHTTP>",
+                "profileName": "MigrationHTTP",
+                "textures": {
+                  "SKIN": {
+                    "url": "https://api.example.com/textures/fixture-skin",
+                    "metadata": {
+                      "model": "slim"
+                    }
+                  },
+                  "CAPE": {
+                    "url": "https://api.example.com/textures/fixture-cape"
+                  }
+                }
+              },
+              "signature": "<verified-signature>"
+            }
+          ]
+        }
+      },
+      {
+        "case": "profile:?unsigned=false&unsigned=0",
+        "status": 200,
+        "body": {
+          "id": "<uuid:MigrationHTTP>",
+          "name": "MigrationHTTP",
+          "properties": [
+            {
+              "name": "textures",
+              "value": {
+                "timestamp": "<current-time>",
+                "profileId": "<uuid:MigrationHTTP>",
+                "profileName": "MigrationHTTP",
+                "textures": {
+                  "SKIN": {
+                    "url": "https://api.example.com/textures/fixture-skin",
+                    "metadata": {
+                      "model": "slim"
+                    }
+                  },
+                  "CAPE": {
+                    "url": "https://api.example.com/textures/fixture-cape"
+                  }
+                }
+              },
+              "signature": "<verified-signature>"
+            }
+          ]
+        }
+      },
+      {
+        "case": "unsigned-false",
+        "status": 200,
+        "body": {
+          "id": "<uuid:MigrationHTTP>",
+          "name": "MigrationHTTP",
+          "properties": [
+            {
+              "name": "textures",
+              "value": {
+                "timestamp": "<current-time>",
+                "profileId": "<uuid:MigrationHTTP>",
+                "profileName": "MigrationHTTP",
+                "textures": {
+                  "SKIN": {
+                    "url": "https://api.example.com/textures/fixture-skin",
+                    "metadata": {
+                      "model": "slim"
+                    }
+                  },
+                  "CAPE": {
+                    "url": "https://api.example.com/textures/fixture-cape"
+                  }
+                }
+              }
+            }
+          ]
+        }
+      },
+      {
+        "case": "name:/mcauth/users/profiles/minecraft/",
+        "status": 200,
+        "body": {
+          "id": "<uuid:MigrationHTTP>",
+          "name": "MigrationHTTP"
+        }
+      },
+      {
+        "case": "name:/mcauth/api/users/profiles/minecraft/",
+        "status": 200,
+        "body": {
+          "id": "<uuid:MigrationHTTP>",
+          "name": "MigrationHTTP"
+        }
+      },
+      {
+        "case": "missing-name",
+        "status": 404,
+        "body": {
+          "error": "UserNotFound",
+          "errorMessage": "The requested user Unknown could not be found"
+        }
+      },
+      {
+        "case": "missing-profile",
+        "status": 204,
+        "body": null
+      },
+      {
+        "case": "batch",
+        "status": 200,
+        "body": [
+          {
+            "id": "<uuid:MigrationHTTP>",
+            "name": "MigrationHTTP"
+          },
+          {
+            "id": "<uuid:MigrationHTTP>",
+            "name": "migrationhttp"
+          }
+        ]
+      },
+      {
+        "case": "null-batch",
+        "status": 200,
+        "body": []
+      },
+      {
+        "case": "wrong-profile-join",
+        "status": 403,
+        "body": {
+          "error": "ForbiddenOperationException",
+          "errorMessage": "Invalid token."
+        }
+      },
+      {
+        "case": "join",
+        "status": 204,
+        "body": null
+      },
+      {
+        "case": "duplicate-join",
+        "status": 500,
+        "body": {
+          "error": "InternalServerError",
+          "errorMessage": "Internal server error."
+        }
+      },
+      {
+        "case": "has-joined-other-ip",
+        "status": 200,
+        "body": {
+          "id": "<uuid:MigrationHTTP>",
+          "name": "MigrationHTTP",
+          "properties": [
+            {
+              "name": "textures",
+              "value": {
+                "timestamp": "<current-time>",
+                "profileId": "<uuid:MigrationHTTP>",
+                "profileName": "MigrationHTTP",
+                "textures": {
+                  "SKIN": {
+                    "url": "https://api.example.com/textures/fixture-skin",
+                    "metadata": {
+                      "model": "slim"
+                    }
+                  },
+                  "CAPE": {
+                    "url": "https://api.example.com/textures/fixture-cape"
+                  }
+                }
+              },
+              "signature": "<verified-signature>"
+            }
+          ]
+        }
+      },
+      {
+        "case": "missing-join",
+        "status": 204,
+        "body": null
+      },
+      {
+        "case": "expired-first-read",
+        "status": 200,
+        "body": {
+          "id": "<uuid:MigrationHTTP>",
+          "name": "MigrationHTTP",
+          "properties": [
+            {
+              "name": "textures",
+              "value": {
+                "timestamp": "<current-time>",
+                "profileId": "<uuid:MigrationHTTP>",
+                "profileName": "MigrationHTTP",
+                "textures": {
+                  "SKIN": {
+                    "url": "https://api.example.com/textures/fixture-skin",
+                    "metadata": {
+                      "model": "slim"
+                    }
+                  },
+                  "CAPE": {
+                    "url": "https://api.example.com/textures/fixture-cape"
+                  }
+                }
+              },
+              "signature": "<verified-signature>"
+            }
+          ]
+        }
+      },
+      {
+        "case": "expired-cleared",
+        "status": 204,
+        "body": null
+      },
+      {
+        "case": "refresh",
+        "status": 200,
+        "body": {
+          "accessToken": "<access:2>",
+          "clientToken": "contract-client",
+          "selectedProfile": {
+            "id": "<uuid:MigrationHTTP>",
+            "name": "MigrationHTTP",
+            "properties": [
+              {
+                "name": "textures",
+                "value": {
+                  "timestamp": "<current-time>",
+                  "profileId": "<uuid:MigrationHTTP>",
+                  "profileName": "MigrationHTTP",
+                  "textures": {
+                    "SKIN": {
+                      "url": "https://api.example.com/textures/fixture-skin",
+                      "metadata": {
+                        "model": "slim"
+                      }
+                    },
+                    "CAPE": {
+                      "url": "https://api.example.com/textures/fixture-cape"
+                    }
+                  }
+                }
+              }
+            ]
+          },
+          "user": {
+            "id": "271879c298d9c1dfe1be69870fe6916b",
+            "properties": []
+          }
+        }
+      },
+      {
+        "case": "old-token",
+        "status": 403,
+        "body": {
+          "error": "ForbiddenOperationException",
+          "errorMessage": "Invalid token."
+        }
+      },
+      {
+        "case": "new-token",
+        "status": 204,
+        "body": null
+      },
+      {
+        "case": "invalidate",
+        "status": 204,
+        "body": null
+      },
+      {
+        "case": "invalidate-repeat",
+        "status": 204,
+        "body": null
+      },
+      {
+        "case": "invalidated-token",
+        "status": 403,
+        "body": {
+          "error": "ForbiddenOperationException",
+          "errorMessage": "Invalid token."
+        }
+      },
+      {
+        "case": "generated-client",
+        "status": 200,
+        "body": {
+          "accessToken": "<access:3>",
+          "clientToken": "<generated-client>",
+          "availableProfiles": [
+            {
+              "id": "<uuid:MigrationHTTP>",
+              "name": "MigrationHTTP"
+            }
+          ],
+          "selectedProfile": {
+            "id": "<uuid:MigrationHTTP>",
+            "name": "MigrationHTTP"
+          }
+        }
+      },
+      {
+        "case": "signout-wrong",
+        "status": 403,
+        "body": {
+          "error": "ForbiddenOperationException",
+          "errorMessage": "Invalid credentials. Invalid username or password."
+        }
+      },
+      {
+        "case": "signout",
+        "status": 204,
+        "body": null
+      },
+      {
+        "case": "signed-out-token",
+        "status": 403,
+        "body": {
+          "error": "ForbiddenOperationException",
+          "errorMessage": "Invalid token."
+        }
+      },
+      {
+        "case": "chinese-login",
+        "status": 200,
+        "body": {
+          "accessToken": "<access:6>",
+          "clientToken": "chinese-client",
+          "availableProfiles": [
+            {
+              "id": "<uuid:迁移用户>",
+              "name": "迁移用户"
+            }
+          ],
+          "selectedProfile": {
+            "id": "<uuid:迁移用户>",
+            "name": "迁移用户"
+          },
+          "user": {
+            "id": "6151074ab2a40ca51cc0ecdbffa08cbd",
+            "properties": []
+          }
+        }
+      },
+      {
+        "case": "chinese-name",
+        "status": 200,
+        "body": {
+          "id": "<uuid:迁移用户>",
+          "name": "迁移用户"
+        }
+      },
+      {
+        "case": "delete-target-login",
+        "status": 200,
+        "body": {
+          "accessToken": "<access:7>",
+          "clientToken": "delete-client",
+          "availableProfiles": [
+            {
+              "id": "<uuid:MigrationHTTP>",
+              "name": "MigrationHTTP"
+            }
+          ],
+          "selectedProfile": {
+            "id": "<uuid:MigrationHTTP>",
+            "name": "MigrationHTTP"
+          }
+        }
+      },
+      {
+        "case": "local-avatar-pixels",
+        "status": 200,
+        "body": {
+          "size": [
+            20,
+            20
+          ],
+          "rgba_sha256": "2f06bc0f37616fa7fa759723c64c8d651384666dc3e6c8e773426603480a4f4c"
+        }
+      },
+      {
+        "case": "remote-avatar-pixels",
+        "status": 200,
+        "body": {
+          "size": [
+            20,
+            20
+          ],
+          "rgba_sha256": "2f06bc0f37616fa7fa759723c64c8d651384666dc3e6c8e773426603480a4f4c"
+        }
+      },
+      {
+        "case": "avatar-method",
+        "status": 405,
+        "body": {
+          "error": "HTTP/1.1 405 Method Not Allowed",
+          "errorMessage": "不支持的请求方法"
+        }
+      },
+      {
+        "case": "avatar-size-zero",
+        "status": 400,
+        "body": {
+          "error": "IllegalArgumentException",
+          "errorMessage": "Avatar size must be a positive integer."
+        }
+      },
+      {
+        "case": "avatar-size-missing",
+        "status": 400,
+        "body": {
+          "error": "IllegalArgumentException",
+          "errorMessage": "Avatar UUID and size are required."
+        }
+      },
+      {
+        "case": "avatar-corrupt-remote",
+        "status": 500,
+        "body": {
+          "error": "InternalServerError",
+          "errorMessage": "Internal server error."
+        }
+      },
+      {
+        "case": "delete-method",
+        "status": 405,
+        "body": {
+          "error": "HTTP/1.1 405 Method Not Allowed",
+          "errorMessage": "不支持的请求方法"
+        }
+      },
+      {
+        "case": "delete-key-missing",
+        "status": 400,
+        "body": {
+          "msg": "超级操作密钥或用户UID不能为空"
+        }
+      },
+      {
+        "case": "delete-key-wrong",
+        "status": 403,
+        "body": {
+          "msg": "超级操作密钥错误"
+        }
+      },
+      {
+        "case": "delete-legacy-field",
+        "status": 400,
+        "body": {
+          "msg": "超级操作密钥或用户UID不能为空"
+        }
+      },
+      {
+        "case": "delete-user-missing",
+        "status": 404,
+        "body": {
+          "msg": "用户不存在，或未登录过 Minecraft 服务器"
+        }
+      },
+      {
+        "case": "delete-failure-rollback",
+        "status": 500,
+        "body": {
+          "error": "InternalServerError",
+          "errorMessage": "Internal server error."
+        }
+      },
+      {
+        "case": "delete-rollback-token",
+        "status": 204,
+        "body": null
+      },
+      {
+        "case": "delete-user",
+        "status": 200,
+        "body": {
+          "msg": "删除成功"
+        }
+      },
+      {
+        "case": "deleted-token",
+        "status": 403,
+        "body": {
+          "error": "ForbiddenOperationException",
+          "errorMessage": "Invalid token."
+        }
+      },
+      {
+        "case": "other-user-token",
+        "status": 204,
+        "body": null
+      },
+      {
+        "case": "deleted-name",
+        "status": 404,
+        "body": {
+          "error": "UserNotFound",
+          "errorMessage": "The requested user MigrationHTTP could not be found"
+        }
+      }
+    ],
+    "database": {
+      "profiles": [
+        {
+          "uid": 970002,
+          "name": "迁移用户",
+          "profileId": "6151074ab2a40ca51cc0ecdbffa08cbd",
+          "uuid": "<uuid:迁移用户>",
+          "texture_data": {
+            "timestamp": "<current-time>",
+            "profileId": "<uuid:迁移用户>",
+            "profileName": "迁移用户",
+            "textures": {
+              "SKIN": {
+                "url": "https://api.example.com/textures/fixture-skin",
+                "metadata": {
+                  "model": "slim"
+                }
+              },
+              "CAPE": {
+                "url": "https://api.example.com/textures/fixture-cape"
+              }
+            }
+          }
+        }
+      ],
+      "tokens": [
+        {
+          "uid": 970002,
+          "name": "迁移用户",
+          "accessToken": "<access:6>",
+          "clientToken": "chinese-client",
+          "create_time": "<current-time>"
+        }
+      ],
+      "textures": [
+        {
+          "uid": 970002,
+          "uuid": "<uuid:迁移用户>",
+          "name": "迁移用户",
+          "skin": "fixture-skin",
+          "model": "slim",
+          "cape": "fixture-cape",
+          "timestamps": "<current-time>"
+        }
+      ],
+      "joins": []
+    },
+    "material_files": {
+      "fixture-cape": "1d8f524b804fcc35c51b1610b2fa5d8365b7e418245dea1fa6273dd0a5318252",
+      "fixture-skin": "1d8f524b804fcc35c51b1610b2fa5d8365b7e418245dea1fa6273dd0a5318252"
+    }
+  }
+}

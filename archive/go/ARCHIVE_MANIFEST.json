@@ -1,0 +1,368 @@
+{
+  "baseline_commit": "cc458ab7d709323bdf4b9ca6f7ac1c857c4cfa09",
+  "archive_date": "2026-11-14",
+  "files": [
+    {
+      "source": ".github/workflows/build.yml",
+      "archive": "archive/go/.github/workflows/build.yml",
+      "sha256": "56b8931801a78384d0b0a04505860dc01652bd5c5df06a81548fcdbdd155a400",
+      "source_commit": "cc458ab7d709323bdf4b9ca6f7ac1c857c4cfa09"
+    },
+    {
+      "source": "GO_MIGRATION_PLAN.md",
+      "archive": "archive/go/GO_MIGRATION_PLAN.md",
+      "sha256": "bb238d55427841eb055e460f1b79b05704824d1d675849e0d59983453ee4a2e6",
+      "source_commit": "cc458ab7d709323bdf4b9ca6f7ac1c857c4cfa09"
+    },
+    {
+      "source": "README.md",
+      "archive": "archive/go/README.md",
+      "sha256": "07dc42982f5a80cf2a15b8c6d1e3305fc345dba4c1afbd64d600e977d66933a4",
+      "source_commit": "cc458ab7d709323bdf4b9ca6f7ac1c857c4cfa09"
+    },
+    {
+      "source": "cmd/aihmc-api/main.go",
+      "archive": "archive/go/cmd/aihmc-api/main.go",
+      "sha256": "2b8c2f61da288e83e93500422e3f3ebd8ae4dba4a94007ff6784c7ada202ad64",
+      "source_commit": "cc458ab7d709323bdf4b9ca6f7ac1c857c4cfa09"
+    },
+    {
+      "source": "config.example.toml",
+      "archive": "archive/go/config.example.toml",
+      "sha256": "4816e269af0605cf70db03f93148c771bfce591830aa6f8ef5285975d08a86a0",
+      "source_commit": "cc458ab7d709323bdf4b9ca6f7ac1c857c4cfa09"
+    },
+    {
+      "source": "docs/DEPLOYMENT.md",
+      "archive": "archive/go/docs/DEPLOYMENT.md",
+      "sha256": "72fa02c3743d09fe9e60e37f0918f488a2b0a764336c7b9e50cd35e1e46abcab",
+      "source_commit": "cc458ab7d709323bdf4b9ca6f7ac1c857c4cfa09"
+    },
+    {
+      "source": "docs/M0_COMPATIBILITY.md",
+      "archive": "archive/go/docs/M0_COMPATIBILITY.md",
+      "sha256": "c851f20fee9fe85c6db9aef03710c33523bca1f817572857694f2179a5960e06",
+      "source_commit": "cc458ab7d709323bdf4b9ca6f7ac1c857c4cfa09"
+    },
+    {
+      "source": "docs/MIGRATION_PROGRESS.md",
+      "archive": "archive/go/docs/MIGRATION_PROGRESS.md",
+      "sha256": "2ba8001402802943968634411f3e64a5425ca9657f737b7286ec9f391ec69a72",
+      "source_commit": "cc458ab7d709323bdf4b9ca6f7ac1c857c4cfa09"
+    },
+    {
+      "source": "docs/contract-comparison.json",
+      "archive": "archive/go/docs/contract-comparison.json",
+      "sha256": "a77396ae737be3841d3519245af67f0ff8c80f1b092d710bc8d15089faafe38c",
+      "source_commit": "cc458ab7d709323bdf4b9ca6f7ac1c857c4cfa09"
+    },
+    {
+      "source": "docs/go-http-baseline.json",
+      "archive": "archive/go/docs/go-http-baseline.json",
+      "sha256": "93576d9f1b627cb6915eec533dbb9d3530e58b5d87b6fe6aa73042c7f1e5c297",
+      "source_commit": "cc458ab7d709323bdf4b9ca6f7ac1c857c4cfa09"
+    },
+    {
+      "source": "docs/go-local-performance.json",
+      "archive": "archive/go/docs/go-local-performance.json",
+      "sha256": "b38050f2fdd5afeddf12297dc20d34b9a9489b090e345f9d28c120ba48207146",
+      "source_commit": "cc458ab7d709323bdf4b9ca6f7ac1c857c4cfa09"
+    },
+    {
+      "source": "docs/legacy-http-baseline.json",
+      "archive": "archive/go/docs/legacy-http-baseline.json",
+      "sha256": "acfcbafde7b969b94d04351cc4f92587def77d6733bca2b7591ab1593a877b5d",
+      "source_commit": "cc458ab7d709323bdf4b9ca6f7ac1c857c4cfa09"
+    },
+    {
+      "source": "docs/legacy-image-models.json",
+      "archive": "archive/go/docs/legacy-image-models.json",
+      "sha256": "d31bf432fd32e71a66a3d27db60cb253bb40e2d1c2a9d8ec2e2b3ef5fa451ff8",
+      "source_commit": "cc458ab7d709323bdf4b9ca6f7ac1c857c4cfa09"
+    },
+    {
+      "source": "docs/legacy-protocol-vectors.json",
+      "archive": "archive/go/docs/legacy-protocol-vectors.json",
+      "sha256": "28f15498dd21db4c2efa31ffb0005bf8921a8a1bbf7f36e5a975d47c2f8b64f6",
+      "source_commit": "cc458ab7d709323bdf4b9ca6f7ac1c857c4cfa09"
+    },
+    {
+      "source": "docs/legacy-source-sha256.json",
+      "archive": "archive/go/docs/legacy-source-sha256.json",
+      "sha256": "5311247e15b0f7fcf5326237c105ecff11f9a69b83b330b41a7dec9a4c5a0b6f",
+      "source_commit": "cc458ab7d709323bdf4b9ca6f7ac1c857c4cfa09"
+    },
+    {
+      "source": "docs/linux-build-verification.json",
+      "archive": "archive/go/docs/linux-build-verification.json",
+      "sha256": "2bf7620c4e0bd995650635a7566551705273ec5188ed855d664397454bf0e78c",
+      "source_commit": "cc458ab7d709323bdf4b9ca6f7ac1c857c4cfa09"
+    },
+    {
+      "source": "docs/live-metadata-verification.json",
+      "archive": "archive/go/docs/live-metadata-verification.json",
+      "sha256": "580b0748e164a19ef9fa88fc300e573cddb91488d0268f1ff73ac54353f030ca",
+      "source_commit": "cc458ab7d709323bdf4b9ca6f7ac1c857c4cfa09"
+    },
+    {
+      "source": "docs/local-schema-verification.json",
+      "archive": "archive/go/docs/local-schema-verification.json",
+      "sha256": "c7720c9f81b54cb0516073e40bcc4ef11f62a04982cab7c0b947c2b92b0c5a8c",
+      "source_commit": "cc458ab7d709323bdf4b9ca6f7ac1c857c4cfa09"
+    },
+    {
+      "source": "docs/material-upstream-connectivity.json",
+      "archive": "archive/go/docs/material-upstream-connectivity.json",
+      "sha256": "48319ad514ff9b913822173280712ef6c37b1cdda0df1c61acfdb512cecbe216",
+      "source_commit": "cc458ab7d709323bdf4b9ca6f7ac1c857c4cfa09"
+    },
+    {
+      "source": "docs/php-local-performance.json",
+      "archive": "archive/go/docs/php-local-performance.json",
+      "sha256": "2427181f4b773d87d8f7c3f543d9d3ad98b7c88548b64189aab9d661b4a0fe40",
+      "source_commit": "cc458ab7d709323bdf4b9ca6f7ac1c857c4cfa09"
+    },
+    {
+      "source": "docs/real-upstream-verification.json",
+      "archive": "archive/go/docs/real-upstream-verification.json",
+      "sha256": "d3696b3682433f4ad0a21e51f5a83158b82a0a18a32e2894a5c762835b65aea3",
+      "source_commit": "cc458ab7d709323bdf4b9ca6f7ac1c857c4cfa09"
+    },
+    {
+      "source": "go.mod",
+      "archive": "archive/go/go.mod",
+      "sha256": "9dda66f97e4ec5f909d637855e0bd69c2025aabbb740cfcf5a8131230b81b888",
+      "source_commit": "cc458ab7d709323bdf4b9ca6f7ac1c857c4cfa09"
+    },
+    {
+      "source": "go.sum",
+      "archive": "archive/go/go.sum",
+      "sha256": "7224b06ca376c9ff55e6924c3f096e30a8e4273e6385f4b2985786bd99490d67",
+      "source_commit": "cc458ab7d709323bdf4b9ca6f7ac1c857c4cfa09"
+    },
+    {
+      "source": "internal/auth/protocol.go",
+      "archive": "archive/go/internal/auth/protocol.go",
+      "sha256": "9dff2170a0ed5b51decf714ac6ecb07d1c2e24e2fb227f8d30b89e2ce0d2459a",
+      "source_commit": "cc458ab7d709323bdf4b9ca6f7ac1c857c4cfa09"
+    },
+    {
+      "source": "internal/auth/protocol_test.go",
+      "archive": "archive/go/internal/auth/protocol_test.go",
+      "sha256": "d6c3284480e1b7b4f8f83c81c0692cf0df55420a33a15a66bfcd48334bbcee6c",
+      "source_commit": "cc458ab7d709323bdf4b9ca6f7ac1c857c4cfa09"
+    },
+    {
+      "source": "internal/auth/service.go",
+      "archive": "archive/go/internal/auth/service.go",
+      "sha256": "9781c1a33d84d36134aaffb513cac31cb0cfcdc140dea1d21df713d88528b6fb",
+      "source_commit": "cc458ab7d709323bdf4b9ca6f7ac1c857c4cfa09"
+    },
+    {
+      "source": "internal/config/config.go",
+      "archive": "archive/go/internal/config/config.go",
+      "sha256": "e458661dadd753e0c0ba6d21948d05ef5a5b7502699aa35fcbff10f047d1ab34",
+      "source_commit": "cc458ab7d709323bdf4b9ca6f7ac1c857c4cfa09"
+    },
+    {
+      "source": "internal/config/config_test.go",
+      "archive": "archive/go/internal/config/config_test.go",
+      "sha256": "7d73a33797af40da809813aa244c6a001e12a2057ec152f453aa8b2ed2f521bc",
+      "source_commit": "cc458ab7d709323bdf4b9ca6f7ac1c857c4cfa09"
+    },
+    {
+      "source": "internal/httpapi/client_ip.go",
+      "archive": "archive/go/internal/httpapi/client_ip.go",
+      "sha256": "ad35fb0b885901c2c3b06d8881fe1da7e20005ca511750d9a288be546ac5c384",
+      "source_commit": "cc458ab7d709323bdf4b9ca6f7ac1c857c4cfa09"
+    },
+    {
+      "source": "internal/httpapi/client_ip_test.go",
+      "archive": "archive/go/internal/httpapi/client_ip_test.go",
+      "sha256": "e82badc4c106dd6f0dfe9e961da31b749d4cf7fca7271759b3bc463683d90321",
+      "source_commit": "cc458ab7d709323bdf4b9ca6f7ac1c857c4cfa09"
+    },
+    {
+      "source": "internal/httpapi/handler.go",
+      "archive": "archive/go/internal/httpapi/handler.go",
+      "sha256": "a5e02864e778f62df8b475847d62ff6c36a250deab23b13af9904e0230692a3a",
+      "source_commit": "cc458ab7d709323bdf4b9ca6f7ac1c857c4cfa09"
+    },
+    {
+      "source": "internal/httpapi/handler_test.go",
+      "archive": "archive/go/internal/httpapi/handler_test.go",
+      "sha256": "055793141db86e9809813b87208329115ce6285d72659a61a4620379e8ea850b",
+      "source_commit": "cc458ab7d709323bdf4b9ca6f7ac1c857c4cfa09"
+    },
+    {
+      "source": "internal/store/open.go",
+      "archive": "archive/go/internal/store/open.go",
+      "sha256": "79ac03bf6e548ec29734196e80c80d5601be1c04da3d86300b579c9d1b9fd601",
+      "source_commit": "cc458ab7d709323bdf4b9ca6f7ac1c857c4cfa09"
+    },
+    {
+      "source": "internal/store/store.go",
+      "archive": "archive/go/internal/store/store.go",
+      "sha256": "ab87ec9af1d1c44aff1db69284b3e5f0b40d58af545e1989e82c23b125b644cf",
+      "source_commit": "cc458ab7d709323bdf4b9ca6f7ac1c857c4cfa09"
+    },
+    {
+      "source": "internal/store/store_test.go",
+      "archive": "archive/go/internal/store/store_test.go",
+      "sha256": "63162c2816cd1438944e565d5f5db105f258ae7de33a19017d65472b1380cac2",
+      "source_commit": "cc458ab7d709323bdf4b9ca6f7ac1c857c4cfa09"
+    },
+    {
+      "source": "internal/testutil/database.go",
+      "archive": "archive/go/internal/testutil/database.go",
+      "sha256": "4a68e5caea514b8b9a5b1ada0c35aad309c2d015eea6cff901b0ed3218baac2f",
+      "source_commit": "cc458ab7d709323bdf4b9ca6f7ac1c857c4cfa09"
+    },
+    {
+      "source": "internal/testutil/root.go",
+      "archive": "archive/go/internal/testutil/root.go",
+      "sha256": "fe3c3d16a1dc2de45afe25e3c2198c277209a7cda7ca30801dc2cb3f77690cce",
+      "source_commit": "cc458ab7d709323bdf4b9ca6f7ac1c857c4cfa09"
+    },
+    {
+      "source": "internal/texture/image.go",
+      "archive": "archive/go/internal/texture/image.go",
+      "sha256": "589ec32137ec2b531abeb86122838ef7aad2c39b8fb0daa876b51e7094fcd924",
+      "source_commit": "cc458ab7d709323bdf4b9ca6f7ac1c857c4cfa09"
+    },
+    {
+      "source": "internal/texture/image_test.go",
+      "archive": "archive/go/internal/texture/image_test.go",
+      "sha256": "2bf44afb73cefbb52db8ca7582c30817a9f6cb55c237d93da4aa0afbdce56fb2",
+      "source_commit": "cc458ab7d709323bdf4b9ca6f7ac1c857c4cfa09"
+    },
+    {
+      "source": "internal/texture/service.go",
+      "archive": "archive/go/internal/texture/service.go",
+      "sha256": "368feb4dc00121998120e060f204c03eb1f6ddae0732f100202545efe8ec11f5",
+      "source_commit": "cc458ab7d709323bdf4b9ca6f7ac1c857c4cfa09"
+    },
+    {
+      "source": "internal/texture/service_test.go",
+      "archive": "archive/go/internal/texture/service_test.go",
+      "sha256": "9f12adffad1f5c82a47cf48323789dc6b93ea532ccac540e7f7d777e50fa87fc",
+      "source_commit": "cc458ab7d709323bdf4b9ca6f7ac1c857c4cfa09"
+    },
+    {
+      "source": "internal/ucenter/client.go",
+      "archive": "archive/go/internal/ucenter/client.go",
+      "sha256": "991cda7f65876bad2b350f93adc125241b80f3baae43fb4003229b48bfff1d16",
+      "source_commit": "cc458ab7d709323bdf4b9ca6f7ac1c857c4cfa09"
+    },
+    {
+      "source": "internal/ucenter/client_test.go",
+      "archive": "archive/go/internal/ucenter/client_test.go",
+      "sha256": "06c370a75591170243a29afcba1efa58b8160a7eb0db6b12dd3551e5b49382fd",
+      "source_commit": "cc458ab7d709323bdf4b9ca6f7ac1c857c4cfa09"
+    },
+    {
+      "source": "tests/schema.sql",
+      "archive": "archive/go/tests/schema.sql",
+      "sha256": "e2b096dde588615fb5ee6b87dcd131654a7081c595ebbd3208d457b937abad64",
+      "source_commit": "cc458ab7d709323bdf4b9ca6f7ac1c857c4cfa09"
+    },
+    {
+      "source": "tests/testdata/avatar-32-16.png",
+      "archive": "archive/go/tests/testdata/avatar-32-16.png",
+      "sha256": "438f800518f275b56e6be0bd478d88f6012fa479bda08f184cd4e630f055f879",
+      "source_commit": "cc458ab7d709323bdf4b9ca6f7ac1c857c4cfa09"
+    },
+    {
+      "source": "tests/testdata/avatar-32-20.png",
+      "archive": "archive/go/tests/testdata/avatar-32-20.png",
+      "sha256": "dfaa6bd8487ffa959f19ad01c129c56b60d99bffc5fb405b327fdce3fe5a938e",
+      "source_commit": "cc458ab7d709323bdf4b9ca6f7ac1c857c4cfa09"
+    },
+    {
+      "source": "tests/testdata/avatar-32-64.png",
+      "archive": "archive/go/tests/testdata/avatar-32-64.png",
+      "sha256": "05f9dbb606f57ea1c213ca9559aff764e6871885bcb00fe583156fdca8b12e13",
+      "source_commit": "cc458ab7d709323bdf4b9ca6f7ac1c857c4cfa09"
+    },
+    {
+      "source": "tests/testdata/avatar-32-8.png",
+      "archive": "archive/go/tests/testdata/avatar-32-8.png",
+      "sha256": "cf76d5d465319e521d95028cf7db56733d6d62e08f92fb6ac0df9a1e169c06a9",
+      "source_commit": "cc458ab7d709323bdf4b9ca6f7ac1c857c4cfa09"
+    },
+    {
+      "source": "tests/testdata/avatar-64-16.png",
+      "archive": "archive/go/tests/testdata/avatar-64-16.png",
+      "sha256": "438f800518f275b56e6be0bd478d88f6012fa479bda08f184cd4e630f055f879",
+      "source_commit": "cc458ab7d709323bdf4b9ca6f7ac1c857c4cfa09"
+    },
+    {
+      "source": "tests/testdata/avatar-64-20.png",
+      "archive": "archive/go/tests/testdata/avatar-64-20.png",
+      "sha256": "dfaa6bd8487ffa959f19ad01c129c56b60d99bffc5fb405b327fdce3fe5a938e",
+      "source_commit": "cc458ab7d709323bdf4b9ca6f7ac1c857c4cfa09"
+    },
+    {
+      "source": "tests/testdata/avatar-64-64.png",
+      "archive": "archive/go/tests/testdata/avatar-64-64.png",
+      "sha256": "05f9dbb606f57ea1c213ca9559aff764e6871885bcb00fe583156fdca8b12e13",
+      "source_commit": "cc458ab7d709323bdf4b9ca6f7ac1c857c4cfa09"
+    },
+    {
+      "source": "tests/testdata/avatar-64-8.png",
+      "archive": "archive/go/tests/testdata/avatar-64-8.png",
+      "sha256": "cf76d5d465319e521d95028cf7db56733d6d62e08f92fb6ac0df9a1e169c06a9",
+      "source_commit": "cc458ab7d709323bdf4b9ca6f7ac1c857c4cfa09"
+    },
+    {
+      "source": "tests/testdata/avatar-nohat-20.png",
+      "archive": "archive/go/tests/testdata/avatar-nohat-20.png",
+      "sha256": "f167d79815cc6e76891455219564bc332cc3ab39fa354f3c01a4d83935ce9f0c",
+      "source_commit": "cc458ab7d709323bdf4b9ca6f7ac1c857c4cfa09"
+    },
+    {
+      "source": "tests/testdata/avatar-slim-20.png",
+      "archive": "archive/go/tests/testdata/avatar-slim-20.png",
+      "sha256": "dfaa6bd8487ffa959f19ad01c129c56b60d99bffc5fb405b327fdce3fe5a938e",
+      "source_commit": "cc458ab7d709323bdf4b9ca6f7ac1c857c4cfa09"
+    },
+    {
+      "source": "tests/testdata/skin-32.png",
+      "archive": "archive/go/tests/testdata/skin-32.png",
+      "sha256": "8ebfe06f05a9ea9f1eea9178311ccaa713d3c9e1eab28c837386f99a3facb6d0",
+      "source_commit": "cc458ab7d709323bdf4b9ca6f7ac1c857c4cfa09"
+    },
+    {
+      "source": "tests/testdata/skin-64.png",
+      "archive": "archive/go/tests/testdata/skin-64.png",
+      "sha256": "1d8f524b804fcc35c51b1610b2fa5d8365b7e418245dea1fa6273dd0a5318252",
+      "source_commit": "cc458ab7d709323bdf4b9ca6f7ac1c857c4cfa09"
+    },
+    {
+      "source": "tests/testdata/skin-nohat.png",
+      "archive": "archive/go/tests/testdata/skin-nohat.png",
+      "sha256": "58366072adfd4fe38ee3ec276c116fead400b854eb7c6b6466b8c4bf1b0d654e",
+      "source_commit": "cc458ab7d709323bdf4b9ca6f7ac1c857c4cfa09"
+    },
+    {
+      "source": "tests/testdata/skin-slim.png",
+      "archive": "archive/go/tests/testdata/skin-slim.png",
+      "sha256": "17511f6a67ad4875d637fb69493384385322c571490017e335eca614baf78244",
+      "source_commit": "cc458ab7d709323bdf4b9ca6f7ac1c857c4cfa09"
+    },
+    {
+      "source": "tests/tools/protocol-bridge/main.go",
+      "archive": "archive/go/tests/tools/protocol-bridge/main.go",
+      "sha256": "c8198380b65d3ac10eb39db6584ad785d58f4eb5c896a56b34029cac1ac03db7",
+      "source_commit": "c01473979facddf2d09ce9816a818c79fa5663b8",
+      "purpose": "Rust migration verification helper; production Go unchanged"
+    },
+    {
+      "source": "tests/tools/http-fixture/main.go",
+      "archive": "archive/go/tests/tools/http-fixture/main.go",
+      "sha256": "c5b210f4d8384fefa33c2da7219d2f2dcebd28a534f95089e108c96c9d0cca89",
+      "source_commit": "c01473979facddf2d09ce9816a818c79fa5663b8",
+      "purpose": "Rust migration verification helper; production Go unchanged"
+    }
+  ]
+}

@@ -1,0 +1,55 @@
+[server]
+listen = "127.0.0.1:8080"
+public_base_url = "https://api.example.com"
+read_header_timeout = "5s"
+read_timeout = "15s"
+write_timeout = "30s"
+shutdown_timeout = "15s"
+
+[site]
+name = "AIHMC API"
+implementation_name = "aihmc-api-go"
+implementation_version = "0.1.0"
+homepage = "https://www.example.com"
+register_url = "https://www.example.com/register"
+allow_non_email_login = true
+
+[database]
+host = "127.0.0.1"
+port = 3306
+name = "aihmc_api"
+user = "aihmc_api"
+password_file = "secrets/database-password"
+charset = "utf8mb4"
+collation = "utf8mb4_unicode_ci"
+max_open_connections = 10
+max_idle_connections = 5
+connect_timeout = "5s"
+query_timeout = "5s"
+
+[ucenter]
+endpoint = "https://ucenter.example.com/api"
+app_id = "replace-me"
+secret_file = "secrets/ucenter-secret"
+nonce = "replace-with-existing-value"
+request_timeout = "10s"
+
+[auth]
+private_key_file = "keys/yggdrasil-private-key.pem"
+public_key_file = "keys/yggdrasil-public-key.pem"
+login_record_retention = "30m"
+
+[textures]
+directory = "textures"
+public_base_url = "https://api.example.com/textures"
+request_timeout = "10s"
+mojang_base_url = "https://api.mojang.com"
+crafatar_base_url = "https://crafatar.com"
+crafthead_base_url = "https://crafthead.net"
+
+[admin]
+super_key_file = "secrets/admin-super-key"
+
+[logging]
+level = "info"
+format = "json"

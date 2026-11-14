@@ -1,0 +1,8 @@
+{
+  "implementation": "php",
+  "scenario": "signed profile query with local MariaDB and ephemeral RSA key",
+  "sample_count": 30,
+  "median_ms": 170.6600500001514,
+  "p95_ms": 223.65259999969567,
+  "production_equivalence": false
+}

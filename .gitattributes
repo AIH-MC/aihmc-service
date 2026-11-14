@@ -1,2 +1,3 @@
 # Keep the historical snapshot byte-for-byte, including its original line endings.
 archive/php/** -text
+archive/go/** -text -whitespace

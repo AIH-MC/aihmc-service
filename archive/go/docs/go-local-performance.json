@@ -1,0 +1,8 @@
+{
+  "implementation": "go",
+  "scenario": "signed profile query with local MariaDB and ephemeral RSA key",
+  "sample_count": 30,
+  "median_ms": 2.3011499979475047,
+  "p95_ms": 12.661900000239257,
+  "production_equivalence": false
+}

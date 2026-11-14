@@ -110,3 +110,15 @@ R3 检查点：`5ff72c38f54699da3949dcccd807b344eadc07b1` 已提交推送，远�
 - Black/rustfmt、Clippy -D warnings、release、打包和解包 CLI 冒烟 PASS。
 
 证据见 `rust-r4-verification.json`、`rust-r4-contract-comparison.json`。日志中的重复 join、损坏远程头像和故障删除 ERROR 是有意验证的失败路径，预期分别为 HTTP 500，并非未处理失败。Actions/Linux、真实账号/客户端和生产操作继续为非阻塞 MANUAL/PENDING。下一阶段为 R5 Go 归档与 Rust 根目录提升。
+
+R4 检查点：`c01473979facddf2d09ce9816a818c79fa5663b8` 已提交推送，远端核对一致。
+
+## R5 — 本地自动验收通过
+
+Rust 提升至根目录，活动构建、测试及发布脚本使用根目录 Cargo 工程。Go 完整归档至 archive/go，包含 58 个原始基线文件和 2 个迁移校验助手；60 个 SHA256 全部匹配清单。旧 Go workflow 仅作为归档保存，PHP 归档未修改。
+
+独立 Go 归档33个顶层测试及Windows编译通过。根目录Rust全量27项测试（含全部数据库和跨语言用例）、rustfmt、Clippy -D warnings、Windows release及白名单打包/解包冒烟通过。最终解包Rust与独立归档Go正式程序各执行63项真实HTTP用例，数据库、材质文件、并发、跨语言令牌及重启对照通过。最终包配置/数据库检查、监听冲突、不可用数据库和正常退出通过。
+
+Windows ZIP仅含程序、配置模板、README和部署说明，文档/模板与源码一致，SHA256为 1a8a989ab0314ad1605baa4c7387b86c73fb3d21532d1ba15296d384bf8050c9。证据见 rust-r5-verification.json、rust-r5-contract-comparison.json；日志位于 .local/rust-migration/logs/r5-*.log 和 test-output/windows-x64/logs/。
+
+两个活动工作流均仅 workflow_dispatch，矩阵为Linux x64 musl、Linux ARM64 musl、Windows x64 MSVC。静态配置核验通过。Actions全部交由人工，Agent禁止运行；Linux编译、远端发布包、真实账号/客户端和生产项均为非阻塞 MANUAL/PENDING。
