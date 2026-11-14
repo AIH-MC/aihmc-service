@@ -1,12 +1,13 @@
 # Agent Handoff
 
-- 当前任务：将当前项目推送到 AIH-MC/aihmc-service 的 aihmc-auth 分支并切换。
-- 已完成：检查工作区与远端；保留现有项目历史；创建本地 aihmc-auth，origin 已指向目标仓库。
-- 当前分支：aihmc-auth。
-- 提交/推送：本记录随交付提交；随后执行强制推送并验证远端 HEAD，结果见最终交付消息。
-- 用户授权：创建不存在的分支，并强制覆盖目标 aihmc-auth 分支。
-- 工作区：.codegraph/ 为未跟踪的本地索引，不提交；原有项目代码无修改。
-- 验证：本任务仅涉及 Git 操作，未运行构建或业务测试。
-- 环境记录：沙箱内网络与 .git 写入受限，使用授权提升执行 Git 操作。
-- 剩余实施：无代码实施；完成推送及远端提交核对即可交付。
-- 约束：仅覆盖 aihmc-auth；保留其他远端分支，不提交密钥和生产配置。
+- 任务：按 RUST_MIGRATION_PLAN.md 迁移 Rust，阶段完成提交推送。
+- 当前阶段：阶段 1 完成，检查点提交推送后开始阶段 2。
+- 用户补充：Rust 配置改 TOML；完成迁移后原 Python 完整归档 legacy/python/；本地仅 Windows x64；Actions 仅手动且不要运行。
+- 完成：20 路由响应基线、算法/PNG/来源 URL、真实 Uvicorn 回环、现有 MariaDB 隔离库测试；Python 业务源码无修改。
+- 验证：Windows Python 3.13.12，18 项 unittest 通过；black 格式化新增测试；日志 build.log（忽略）。
+- 参考环境差异：python_bcrypt bytes API 和 PyMySQL 1.2.4 编码接口已复现失败；单独固定参考环境，详见 docs/PYTHON_BASELINE.md。不声称原声明依赖全功能可用。
+- 配置：用户已提供忽略的 config.yml，可连接现有 MariaDB；不得输出/提交连接凭据；测试随机隔离库已清理。
+- 分支：aihmc-auth，origin 为 AIH-MC/aihmc-service；阶段 1 正在提交推送，命令结果为准。
+- 后续：阶段 2 Cargo/TOML/基础 HTTP/算法/数据库池/手动 CI，再按计划完成阶段 3—5。
+- 未验证：Rust、Linux、真实插件/上游（MANUAL/PENDING）；Actions NOT RUN（用户指示）。
+- 约束：按阶段顺序；前台 PowerShell Tee-Object 构建测试日志；复用 MySQL；不扩范围；不运行 Actions。
