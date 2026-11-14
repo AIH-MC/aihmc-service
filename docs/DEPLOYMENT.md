@@ -8,7 +8,9 @@ Rust 已覆盖原业务路由。Windows 自动验收包括真实 HTTP、现有 M
 
 `server.debug` 保留配置兼容，但 Rust release 不提供 Python 的代码热重载。`server.timeout` 设置上游请求超时（秒）。
 
-本地只验证 `x86_64-pc-windows-msvc`。Actions 仅 workflow_dispatch，由用户手动运行，开发提交不自动触发。Linux 包使用 Ubuntu 24.04 原生构建，最低实际系统/动态库要求需等待手动构建结果，不宣称支持旧 glibc 或所有发行版。
+本地只验证 `x86_64-pc-windows-msvc`。Actions 仅 workflow_dispatch，由用户手动运行，开发提交不自动触发。Linux x64/ARM64 分别使用 `x86_64-unknown-linux-musl` / `aarch64-unknown-linux-musl` 静态构建，避免依赖构建机 glibc 版本。流水线通过 `readelf` 拒绝含动态加载器、动态库依赖或 `GLIBC_*` 版本要求的产物，并对解压后的程序执行启动检查。Linux 构建未在本地执行，实际产物验收以手动 Actions 结果为准。
+
+若旧包出现 `GLIBC_2.32/2.33/2.34 not found`，需手动运行更新后的 Rust 工作流，下载新 Linux 包替换旧二进制，保留现有配置、密钥及数据。旧包不会因工作流更新而改变，无需替换系统 `libc.so.6`。
 
 生产切换须先备份配置、密钥、数据库和缓存，获授权后切换入口。无表结构迁移；回滚恢复 `legacy/python/main.py`、原 YAML 配置和已备份密钥，不清理业务数据。Python 归档包含独立资源及运行说明。
 

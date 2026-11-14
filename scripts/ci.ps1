@@ -29,6 +29,19 @@ Invoke-CargoStep 'clippy' @('clippy', '--locked', '--all-targets', '--target', $
 Invoke-CargoStep 'test' @('test', '--locked', '--target', $Target)
 Invoke-CargoStep 'release' @('build', '--locked', '--release', '--target', $Target)
 
+if ($Platform -ne 'windows-x64') {
+    # Reject artifacts that would reproduce a loader/glibc version failure.
+    $binary = Join-Path $root "target/$Target/release/aihmc-auth"
+    & readelf --program-headers --dynamic --version-info $binary 2>&1 |
+        Tee-Object -FilePath 'build.log'
+    $buildExitCode = $LASTEXITCODE
+    Copy-Item -LiteralPath 'build.log' -Destination (Join-Path $logs 'linux-linkage.log')
+    if ($buildExitCode -ne 0) { Get-Content 'build.log'; exit $buildExitCode }
+    if (Select-String -LiteralPath 'build.log' -Pattern '\bINTERP\b|\(NEEDED\)|GLIBC_') {
+        throw 'Linux artifact must be statically linked with musl and have no glibc dependency.'
+    }
+}
+
 $staging = Join-Path $root ('test-output/package-' + [guid]::NewGuid().ToString('N'))
 New-Item -ItemType Directory -Path $staging | Out-Null
 New-Item -ItemType Directory -Path (Join-Path $staging 'keys'), (Join-Path $staging 'textures') | Out-Null

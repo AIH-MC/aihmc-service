@@ -32,3 +32,14 @@
 - 验证：YAML/触发器/目标架构/checkout ref、Go 工作流字节保持及 git diff --check 通过；未运行构建、Actions、实服或客户端。
 - 当前用户工作区仍为 aihmc-auth；仅同步 README 与本交接记录到该分支，原功能实施提交不变。
 - 手动入口：https://github.com/AIH-MC/aihmc-service/actions/workflows/rust.yml 。刷新 Actions 后选 Rust manual build，按需由用户手动运行。
+
+## 2026-11-14 Linux glibc 兼容修复
+
+- 用户报告 Linux 二进制启动缺少 GLIBC_2.32、2.33、2.34；旧工作流在 Ubuntu 24.04 构建 GNU 目标，产物依赖构建环境 glibc。
+- 将 Linux x64/ARM64 改为 musl 静态目标；在各自原生 runner 安装 musl-tools，指定 musl-gcc 和 +crt-static。Windows 目标保持不变。
+- ci.ps1 在 Linux release 后通过 readelf 检查 ELF，不允许 INTERP、NEEDED 或 GLIBC_ 版本依赖，检查日志随产物上传。保留解压包 HTTP smoke。
+- 同步更新默认 mc-auth 的手动入口（仍固定 checkout aihmc-auth），原 Go 工作流不改。两分支均使用 [skip ci] 提交并推送；不触发 Actions。
+- 验证：两份 YAML 手动触发器/目标/工具链/checkout 检查、PowerShell 语法、git diff --check PASS；Windows fmt、Clippy、8 单元测试、release、ZIP 解压 HTTP smoke PASS。
+- 首次沙箱内 HTTP smoke 失败；允许本机监听后完整复跑 PASS，日志 test-output/logs/glibc-windows-validation.log。
+- Linux 编译及静态检查的实际执行 NOT RUN（用户要求本地只 Windows、Actions 不运行）；Linux 服务器及客户端人工验收 SKIPPED（用户要求），不作为阻塞。
+- 修复实施完成；用户下一步手动运行 Rust manual build，用新 Linux 包替换旧二进制，保留配置/密钥/数据库。旧包不会自动改变，无需更换系统 libc。
