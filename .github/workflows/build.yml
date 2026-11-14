@@ -1,10 +1,6 @@
 name: Build Go and Rust migration
 
 on:
-  push:
-    branches: [mc-auth]
-  pull_request:
-    branches: [mc-auth]
   workflow_dispatch:
 
 permissions:

@@ -2,7 +2,9 @@
 
 日期：2026-11-14。状态：已获实施授权，R0 基线验证通过，后续进度见 `docs/RUST_MIGRATION_PROGRESS.md`。
 
-实施目标是将当前 Go 服务迁移至 Rust，保留现有业务行为与数据，将当前 Go 版本完整存档至独立目录，并让 Rust 通过现有 GitHub Actions 流程构建 Linux x64、Linux ARM64、Windows x64 发布包。本文将用户所述 Linux ARM 解释为 ARM64，不包含 ARMv7。用户已授权逐阶段验证、提交和推送；本地仅编译和测试 Windows x64，Linux 两个目标由 Actions 验证。
+实施目标是将当前 Go 服务迁移至 Rust，保留现有业务行为与数据，将当前 Go 版本完整存档至独立目录，并配置现有 GitHub Actions 流程构建 Linux x64、Linux ARM64、Windows x64 发布包。本文将用户所述 Linux ARM 解释为 ARM64，不包含 ARMv7。用户已授权逐阶段验证、提交和推送；本地仅编译和测试 Windows x64。
+
+最新执行规则：Actions 全部交由人工，Agent 禁止运行，不作为阶段或交付阻塞条件。工作流仅手动触发；本地 Windows 自动验收通过后即可提交推送并继续。Linux 构建、远端测试及产物验证未由人工提供结果时统一为非阻塞 MANUAL/PENDING，不声明三平台实际编译已通过。此规则覆盖本文原有远端 Actions 门槛。
 
 ## 1. 当前基线与范围
 
@@ -27,7 +29,7 @@
 | `scripts/ci.ps1` | fmt、clippy、test、release、打包、解包、SHA256 和 smoke | 复用流程，按本项目名称、目录和启动参数适配 |
 | `Cargo.toml` | Rust 2024、Tokio、Axum、SQLx MySQL、Reqwest、Rustls、Serde、TOML、图像等依赖 | 作为已存在选型参考，只引入当前业务确需的依赖 |
 
-相邻项目不是本项目的实现或兼容性基准，不复制其业务逻辑、运行配置、凭据、无关资产和全部依赖。这里记录的版本来自现存配置，不声称为最新版本。三平台实际构建通过后才确认配置可直接使用；若需修改，仅修复可复现的问题。
+相邻项目不是本项目的实现或兼容性基准，不复制其业务逻辑、运行配置、凭据、无关资产和全部依赖。这里记录的版本来自现存配置，不声称为最新版本。配置交付包含三目标，但实际三平台构建结果由人工运行核验；若需修改，仅修复可复现的问题。
 
 实施 R0 同步远端后确认：现有 `.github/workflows/rust.yml` 是 checkout `aihmc-auth` 分支的手动构建入口，予以保留，不影响其他分支。本计划的“唯一活动构建工作流”指 mc-auth 当前实现的默认构建由 build.yml 负责，不删除该历史跨分支手动入口，也不拿它的成功代替当前 Rust 实现验证。
 
@@ -46,7 +48,7 @@
 
 本项目采用这些文件中的处理方式：`contents: read`、checkout 不持久化凭据、`pwsh`、按分支组织 concurrency、`cancel-in-progress: true`、`fail-fast: false`、明确超时、失败日志上传及正式产物白名单。concurrency 分组还包含工作流和 PR/分支标识，避免不同工作流互相取消。
 
-参考仓库的 Java/Gradle、loader 和仅手动触发均不照搬；保留本项目现有 push、PR、workflow_dispatch 三种入口。其 `upload-artifact` 使用 `archive: false` 直接交付正式文件的方式可用于本项目已有的压缩包及校验文件，实施时核对 Action 版本和参数支持；不得产生未预期的二次压缩或拿中间产物替代正式包。
+参考仓库的 Java/Gradle 和 loader 不照搬。用户在 R1 更正要求提交不得自动触发 Actions，故本项目构建仅保留 workflow_dispatch，移除 push/PR；误触发运行手动停止。随后用户明确 Actions 全部交由人工、Agent 禁止运行，远端验收为非阻塞人工项。其 `upload-artifact` 使用 `archive: false` 直接交付正式文件的方式可用于本项目已有的压缩包及校验文件，实施时核对 Action 版本和参数支持；不得产生未预期的二次压缩或拿中间产物替代正式包。
 
 ## 3. Rust 实现方案与兼容边界
 
@@ -145,14 +147,14 @@ PowerShell cmdlet 的打包失败使用终止错误传播；不能对 cmdlet 错
 | 阶段 | 工作与交付 | 自动验收要求 |
 | --- | --- | --- |
 | R0 固定 Go 基线与配置复用 | 记录源提交、接口和数据副作用、归档清单；复验现有向量；核验现成 Rust 编译脚本与 omni-morph Actions 约定 | Go 基线可重复；旧测试跳过项明确；配置复用差异清单齐备 |
-| R1 Rust 入口与最小构建链 | 在 `rust/` 建立工程、锁定依赖，迁移配置、日志、CLI、数据库连接、生命周期；接入现有 Action 的 Rust 三平台 job | 三目标 release 编译及 CLI 冒烟通过；配置正反例和路径测试通过；不能因 Go job 成功认定 Rust 可构建 |
+| R1 Rust 入口与最小构建链 | 在 `rust/` 建立工程、锁定依赖，迁移配置、日志、CLI、数据库连接、生命周期；接入仅手动触发的三平台 job | Windows release、CLI 冒烟、配置正反例和路径测试通过；Actions/Linux 为非阻塞 MANUAL/PENDING |
 | R2 数据及协议 | 六表访问与事务、UCenter、令牌和身份、RSA 与材质序列化 | 现有数据库实例内独立测试库集成通过；固定向量、事务回滚和 Go/Rust 双向签名验证通过 |
 | R3 认证与会话 HTTP | 完整认证、角色、会话、默认路由和错误行为 | 受控上游下 Go/Rust 完整请求序列对照；身份、令牌互认、并发及最终数据库状态一致 |
 | R4 材质头像与删除 | 下载、回退、存储、头像、授权删除 | 现有十组头像逐像素对照、新材质逐字节对照、上游失败、并发发布、删除范围及回滚通过 |
-| R5 归档与最终流水线 | 归档 Go、Rust 提升根目录、消除临时构建路径、适配打包及部署说明 | 归档清单核验、Go 归档独立构建、Rust 根目录全量回归、正式包解包冒烟；最终提交的三个 Actions job 全部成功，包及 SHA256 可下载且匹配 |
+| R5 归档与最终流水线 | 归档 Go、Rust 提升根目录、消除临时构建路径、适配打包及部署说明 | 归档清单核验、Go 归档独立 Windows 构建、Rust 根目录 Windows 全量回归和包解包冒烟；三平台 Actions 与远端包校验交由人工，非阻塞 MANUAL/PENDING |
 | R6 交付与生产交接 | 记录 Actions run、提交、包、日志和验证边界，更新交接手册，提供切换与回退步骤 | 自动证据齐备；未执行人工项为非阻塞 MANUAL/PENDING，不宣称上线或真实用户链路已通过 |
 
-每阶段自动验收后：更新进度记录 → 检查 `git status`、`git diff`、`git diff --check` → 在 `mc-auth` 提交 → 推送同名远端分支 → 确认成功 → 开始下一阶段。保留已有修改，不强推、不自动合并 main、不引入新分支前缀。R5 的最终布局调整必须在该阶段提交对应的远端 Actions 通过后才算验收通过；不能用临时目录构建的旧结果替代。
+每阶段本地 Windows 自动验收后：更新进度记录 → 检查 `git status`、`git diff`、`git diff --check` → 在 `mc-auth` 提交 → 推送同名远端分支 → 确认成功 → 开始下一阶段。保留已有修改，不强推、不自动合并 main、不引入新分支前缀。R5 必须实际验证提升后的根目录，不能用临时目录构建结果替代。Actions 不运行、不等待，不阻塞阶段与交付。
 
 ## 7. 真实行为验证与上线交接
 
@@ -171,9 +173,9 @@ Go 与 Rust 在相同初始隔离数据、相同受控上游下分别运行请�
 - [ ] Rust 已替换全部现有受支持服务路径，协议、状态与数据副作用通过对照。
 - [ ] 既有配置、数据库、身份、令牌、密钥、材质继续可用，无业务 schema 迁移。
 - [ ] Go 完整存档于 `archive/go/`，归档可独立构建且不含真实秘密。
-- [ ] 根目录 Rust 可由现有 Action 入口构建，三个原生目标实际成功。
-- [ ] 三份正式发布包解包冒烟通过，SHA256、平台、提交与日志一致。
+- [ ] 根目录 Rust 的三平台手动 Action 配置交付，Windows 本地实际构建成功；Actions/Linux 结果非阻塞 MANUAL/PENDING。
+- [ ] Windows 正式发布包解包冒烟通过，SHA256、平台、提交与日志一致；两个 Linux 发布包由人工运行验收，非阻塞 MANUAL/PENDING。
 - [ ] 部署回退说明、人工项状态及最终 `AGENT_HANDOFF.md` 更新完成。
-- [ ] 各阶段提交已推送并确认，最终提交与远端 Actions run 对应。
+- [ ] 各阶段提交已推送并确认，交接说明待人工运行 Actions 的目标分支及步骤。
 
 实施授权及逐阶段证据见 `docs/RUST_MIGRATION_PROGRESS.md`。既有运行配置处理方式保持不变。

@@ -2,7 +2,7 @@
 
 日期：2026-11-14。实施依据：`../RUST_MIGRATION_PLAN.md`。
 
-用户授权按 R0 至 R6 顺序实施，每阶段验证后提交推送，再继续下一阶段。本地仅构建和测试 Windows x64，Linux x64/ARM64 由 Actions 执行。
+用户授权按 R0 至 R6 顺序实施，每阶段验证后提交推送，再继续下一阶段。本地仅构建和测试 Windows x64。最新更正：Actions 完全交由人工，Agent 禁止运行，不得作为阶段或交付阻塞条件；Linux musl 和远端产物验收统一记录非阻塞 MANUAL/PENDING。
 
 ## R0 — 自动验证通过
 
@@ -35,14 +35,16 @@ R0 检查点：`25eb2048556ea6fad06212a7acce7b7c4824d04b` 已提交、推送并�
 
 生产、真实账号和客户端验收：MANUAL/PENDING，非阻塞。
 
-## R1 — 本地自动验证通过，远端三平台验证待阶段推送
+## R1 — 本地自动验证通过并已推送，Actions 非阻塞人工验收
 
 新增 `rust/` 工程，复用 Rust 1.95.0 与现有依赖选型；实现现有 TOML 结构、未知字段和非法值拒绝、配置目录相对路径、秘密末尾换行处理、PKCS1/PKCS8 私钥与 PKCS1/PKIX 公钥加载匹配、材质目录探测、CLI、真实 MySQL 连接、结构化日志和有界优雅退出。当前仅开放原有根路径提示，认证和材质业务尚未迁移，阶段包 README 明确说明此状态。
 
 用户要求 Linux 直接用 musl，已将两个目标设置为 x86_64-unknown-linux-musl / aarch64-unknown-linux-musl；原生 runner 安装 musl-tools，链接和 C 依赖使用 musl-gcc，脚本以 readelf 检查架构和无动态依赖。Windows 仍为 x86_64-pc-windows-msvc。本地没有编译 Linux。
 
-build.yml 保留迁移期 Go job，增加当前源码的 Rust 三平台 job，现有 checkout aihmc-auth 的跨分支 rust.yml 未改。使用前台脚本，独立保存检查、测试、release、打包和解包冒烟日志。核对固定版本 upload-artifact/action.yml 后确认 archive:false 仅支持单文件，因此压缩包及 SHA256 分别上传。
+build.yml 保留迁移期 Go job，增加当前源码的 Rust 三平台 job，现有 checkout aihmc-auth 的跨分支 rust.yml 未改。用户随后明确提交不应自动触发 Actions，现已移除 push/PR，只保留 workflow_dispatch，后续远端验证全部交由人工，Agent 不启动。使用前台脚本，独立保存检查、测试、release、打包和解包冒烟日志。核对固定版本 upload-artifact/action.yml 后确认 archive:false 仅支持单文件，因此压缩包及 SHA256 分别上传。
 
 本地验证：fmt、Clippy（-D warnings）、8 项 Rust 测试、Windows release、白名单打包解包和 CLI 冒烟均 PASS；解包程序连接现有隔离库的 --check-config、根路径 GET/POST、端口冲突失败、不可用数据库失败以及 Windows Ctrl+Break 正常退出均 PASS。证据和日志哈希见 rust-r1-verification.json。配置文件/密钥测试均使用临时合成资料。
 
-R1 验证不代表完整业务已迁移。六表操作、事务及查询时限/连接池空闲控制在 R2 实现；完整路由及 HTTP 读写时限在 R3 实现；材质与删除在 R4 实现。远端三平台 Actions 成功后再进入 R2，不用本地 Windows 构建替代 Linux musl 证据。
+R1 验证不代表完整业务已迁移。六表操作、事务及查询时限/连接池空闲控制在 R2 实现；完整路由及 HTTP 读写时限在 R3 实现；材质与删除在 R4 实现。按用户最新指示，R1 本地自动验收和提交推送已满足进入 R2 条件，远端为非阻塞 MANUAL/PENDING。
+
+R1 实现已提交推送 `5c308b1446126370fa23579541770287fb774dff`，远端一致。自动触发的 run 43579298110 已按用户要求手动停止，确认终态 completed/cancelled；其中 ARM64 musl job 已通过，但整体取消不记为三平台 PASS。此后不再运行 Actions。Windows PE 依赖检查确认需要 VCRUNTIME140.dll，最终部署说明须列出 x64 VC++ 运行库要求。

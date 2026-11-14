@@ -51,8 +51,13 @@
     "database": "aihmc_migration_test",
     "business_paths": "not implemented in R1"
   },
-  "remote_actions": "PENDING first stage push",
+  "remote_actions": "MANUAL/PENDING (user: agent must not run Actions; non-blocking)",
   "package_sha256": "5810def4fbf27407ac3c3938de0fc9f177ae482a27cd59752aa728bc137cc636",
   "stage": "R1",
-  "toolchain": "1.95.0"
+  "toolchain": "1.95.0",
+  "cancelled_automatic_run": {
+    "id": 43579298110,
+    "conclusion": "cancelled",
+    "status": "completed"
+  }
 }

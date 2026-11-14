@@ -6,7 +6,7 @@ R0 自动验收通过：Go 1.26.4 Windows amd64 全量 go test -count=1 -p 1 -v 
 
 证据在 docs/RUST_MIGRATION_PROGRESS.md、docs/rust-r0-verification.json、docs/rust-go-baseline-manifest.json。Go 源基线 cc458ab7d709323bdf4b9ca6f7ac1c857c4cfa09；本地 .local/rust-migration/ 存放忽略的合成配置、密钥、日志及基线程序，秘密不得提交。
 
-分支 mc-auth 跟踪 origin/mc-auth；远端 https://github.com/AIH-MC/aihmc-service.git。R0 已提交推送 25eb204 并核对。已有 rust.yml 手动工作流 checkout aihmc-auth 分支，保持原状。R1 本地验证完成，当前待提交推送并确认三平台 Actions，之后才能进入 R2。
+分支 mc-auth 跟踪 origin/mc-auth；远端 https://github.com/AIH-MC/aihmc-service.git。R0 已提交推送 25eb204 并核对。R1 实现已提交推送 5c308b1 并核对。用户最新强制规则：Actions 完全交由人工，Agent 禁止运行，不得作为阶段或交付阻塞条件。build.yml 已改为仅 workflow_dispatch，当前修正待提交推送；自动 run 43579298110 已手动取消并确认 completed/cancelled，不再跟踪或重新运行。Linux/远端验收为非阻塞 MANUAL/PENDING。完成此配置修正提交后直接进入 R2。已有 rust.yml 是 aihmc-auth 分支的手动入口，保持原状。
 
 已知验证问题：沙箱限制导致本机数据库及回环 HTTP 失败，正常权限复验消失；Go 包并行写同一隔离库发生跨包死锁，-p 1 后通过，包内并发用例保留。没有修改 Go 源码。后续同库对照应串行。
 
