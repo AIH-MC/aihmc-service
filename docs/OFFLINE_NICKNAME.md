@@ -86,3 +86,15 @@
 - 回归覆盖真实 Windows Rust 进程、现有 MariaDB 隔离库、HTTP 认证源夹具、Velocity API 事件及命令类；认证源响应、连接对象为测试夹具，未启动真实 Velocity 服务器或 Minecraft 客户端。实服及客户端：SKIPPED（用户要求）；Actions/Linux：NOT RUN。
 
 验证结果：Windows fmt/Clippy、8 Rust 单元测试、44 项业务/数据库回归及 ZIP 解压启动检查通过；昵称并发额外 5 轮通过；插件 JDK21 编译及 12 项测试通过（0 失败/跳过）。旧在线分流判断在真实后端调用链回归中失败，修复后通过。证据见 `test-output/logs/name-fix-windows.log`、`nickname-real-chain-red.log`、`nickname-real-chain.log`、`nickname-concurrency.log`。本地新产物位于 `test-output/artifacts/`，无需数据库 DDL；部署需同时更新后端及插件。
+
+## 认证源重名检测开关
+
+在 `config.toml` 顶层（任何 `[表]` 之前）加入：
+
+```toml
+check_auth_source_names = false
+```
+
+默认值为 `true`，旧配置省略时保持原行为。`false` 时离线注册、昵称修改、重连资料解析及随机替换名分配，只检查本地 `namelink.username` 和 `users.username`（排除相同 UUID）；冲突仍分配 `AIHMC_` 加 8 位随机字符，已注册账户持久保存，UUID 不变。在线主动改名同样跳过外部名称占用查询，本地在线名称优先规则保持不变。
+
+此开关仅控制名称可用性检查；正常认证源登录查询、会话验证和重置原名读取认证源资料继续执行。修改配置后重启后端生效，插件无需更新。未配置的认证源名称不再提前保留；之后在线账户进服时，仍按在线名称优先规则处理本地冲突。

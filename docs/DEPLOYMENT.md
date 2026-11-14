@@ -21,3 +21,5 @@ API 保留原 `/docs`、`/redoc`、`/openapi.json` 及 Swagger OAuth 重定向�
 资料关联写库成功仍返回 400、带 IP 的 hasJoined 查询拼接、Mojang CSL 不下载材质仍按基线保留。后续 nickname 功能已替换冲突名称分配：在线名称优先、离线随机名持久化，UUID 不变；不再使用会覆盖其他账户映射或无限重试的旧改名路径。见 `docs/OFFLINE_NICKNAME.md`。
 
 实服验证和启动客户端认证均为人工验收／SKIPPED（用户要求跳过）；生产流量未操作。Actions 按用户要求未运行，Linux x64/ARM64 为 NOT RUN，不使用 Windows 结果替代。
+
+重名查询开关：在 `config.toml` 顶层添加 `check_auth_source_names = false`，可让离线昵称只按本地 `namelink.username`、`users.username` 判断占用，冲突时持久分配随机默认名，UUID 不变。省略或设为 `true` 保持认证源重名检测。它不关闭正版/外置认证或重置原名的认证源资料查询；修改后重启后端生效，插件无需更新。

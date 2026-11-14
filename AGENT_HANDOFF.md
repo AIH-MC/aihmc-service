@@ -1,3 +1,14 @@
+# 当前交付：认证源重名检查开关
+
+- 状态：本次实施及 Windows 自动验证完成，无剩余实施；修复提交到 aihmc-auth 并推送，交付前核对远端 HEAD，提交号见回复。插件无需更新，原 offline-nickname 工作区保持不变。
+- 配置：config.toml 顶层 check_auth_source_names，默认 true（旧配置省略保持原行为）；false 时离线名称分配只检查 namelink.username、users.username，同 UUID 排除，本地冲突仍持久分配 AIHMC_随机8位，UUID 不变。在线主动改名也跳过外部名称占用查询，保留既有本地在线名称优先规则。
+- 开关不关闭正版/外置登录认证、会话验证、重置原名查询；改配置需重启后端。真实本地 config.toml 未修改。
+- 验证 PASS：fmt、Clippy、8 Rust 单元、45 项 Windows 业务/数据库回归、release 打包和 ZIP 解压 HTTP smoke。新增真实 HTTP/MariaDB 隔离库测试覆盖省略/true/false、关闭时零外部名称请求、两表冲突、大小写、持久随机名和 UUID；在线主动改名开关也覆盖。
+- 日志：test-output/logs/source-name-switch-windows.log；产物 test-output/artifacts/aihmc-auth-windows-x64.zip 已更新。docs/DEPLOYMENT.md、docs/OFFLINE_NICKNAME.md 已说明配置位置和边界。
+- 实服及客户端人工验收 SKIPPED（用户要求）；Actions/Linux NOT RUN。未改业务库或数据库表结构。
+
+---
+
 # 当前交付：2026-11-14 名称重置与离线重连修复
 
 - 状态：实施及自动验证完成，无剩余实施；后端 aihmc-auth 功能提交 54aedcb9e54f2e2e7e2a7f2c19527818222b591d、插件 offline-nickname 功能提交 172629c432565fffefaef0afcff87cbdec6da72d 均已推送，并通过 ls-remote 核对远端一致，两个工作区干净。本状态确认作为文档提交同步。

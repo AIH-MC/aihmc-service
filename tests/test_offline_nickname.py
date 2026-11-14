@@ -292,6 +292,113 @@ class OfflineNicknameHTTP(unittest.TestCase):
         )
         self.assertTrue(registered["registered"])
 
+    def test_auth_source_name_check_switch_keeps_local_collisions_and_uuid(self):
+        requests = []
+
+        class Handler(BaseHTTPRequestHandler):
+            def do_GET(self):
+                path = urlparse(self.path).path
+                requests.append(path)
+                found = path.endswith("/RemoteName")
+                body = json.dumps({"id": "a" * 32, "name": "RemoteName"}).encode()
+                self.send_response(200 if found else 204)
+                self.send_header("Content-Length", str(len(body)) if found else "0")
+                self.end_headers()
+                if found:
+                    self.wfile.write(body)
+
+            def log_message(self, *args):
+                pass
+
+        server = ThreadingHTTPServer(("127.0.0.1", 0), Handler)
+        thread = threading.Thread(target=server.serve_forever, daemon=True)
+        thread.start()
+        try:
+            for setting in (None, True, False):
+                with self.subTest(check_auth_source_names=setting):
+                    self.database.reset()
+                    requests.clear()
+                    client = self.service(
+                        sources=[
+                            {
+                                "name": "Official",
+                                "api_type": "mojang",
+                                "root_url": "http://example.com",
+                                "enabled": True,
+                            }
+                        ],
+                        proxy=f"http://127.0.0.1:{server.server_port}",
+                        check_auth_source_names=setting,
+                    )
+                    self.assertEqual(
+                        client.post(
+                            "/offline/reg",
+                            json={
+                                "username": "Account",
+                                "passwd": "p",
+                                "repasswd": "p",
+                                "nickname": "RemoteName",
+                            },
+                        ).status_code,
+                        200,
+                    )
+                    profile = client.get("/offline/profile/Account").json()
+                    uuid = profile["id"]
+                    if setting is False:
+                        self.assertEqual(profile["name"], "RemoteName")
+                        self.assertEqual(requests, [])
+                    else:
+                        self.assertRegex(profile["name"], r"^AIHMC_[a-z0-9]{8}$")
+                        self.assertTrue(requests)
+                    # Both local tables must remain authoritative when external checks are off.
+                    for table, owner, taken in (
+                        ("namelink", "b" * 32, "LocalLink"),
+                        ("users", "c" * 32, "LocalUser"),
+                    ):
+                        self.database.query(
+                            f"INSERT INTO {table} (uuid,username) VALUES (%s,%s)",
+                            (owner, taken),
+                        )
+                        self.assertEqual(
+                            client.post(
+                                "/profile/rename",
+                                json={
+                                    "uuid": uuid,
+                                    "username": taken.lower(),
+                                },
+                            ).status_code,
+                            200,
+                        )
+                        renamed = client.get("/offline/profile/Account").json()
+                        self.assertRegex(renamed["name"], r"^AIHMC_[a-z0-9]{8}$")
+                        self.assertEqual(renamed["id"], uuid)
+                        self.assertEqual(
+                            renamed, client.get("/offline/profile/Account").json()
+                        )
+                        self.assertEqual(
+                            self.database.query(
+                                f"SELECT username FROM {table} WHERE uuid=%s", (owner,)
+                            )[0]["username"],
+                            taken,
+                        )
+                    # Online manual rename must also skip the external name availability query.
+                    response = client.post(
+                        "/profile/rename",
+                        json={
+                            "uuid": "c" * 32,
+                            "username": "RemoteName",
+                        },
+                    )
+                    self.assertEqual(
+                        response.status_code, 200 if setting is False else 400
+                    )
+                    if setting is False:
+                        self.assertEqual(requests, [])
+        finally:
+            server.shutdown()
+            server.server_close()
+            thread.join()
+
 
 if __name__ == "__main__":
     unittest.main()

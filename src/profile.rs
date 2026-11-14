@@ -40,7 +40,7 @@ pub async fn rename(state: &AppState, uuid: &str, username: &str) -> ApiResult<(
         names::offline_name(state, &uuid, username, true).await?;
         return Ok(());
     }
-    if auth::check_name(state, username).await?.is_some() {
+    if state.config.check_auth_source_names && auth::check_name(state, username).await?.is_some() {
         return Err(ApiError::message(400, "改名失败，可能该玩家名已存在"));
     }
     let account = sqlx::query(

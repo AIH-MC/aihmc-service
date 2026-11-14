@@ -49,6 +49,9 @@ async fn available(state: &AppState, uuid: &str, name: &str) -> ApiResult<bool> 
     if owner.is_some() {
         return Ok(false);
     }
+    if !state.config.check_auth_source_names {
+        return Ok(true);
+    }
     Ok(auth::check_name(state, name).await?.is_none())
 }
 

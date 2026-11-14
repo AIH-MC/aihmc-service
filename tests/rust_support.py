@@ -82,7 +82,13 @@ class IsolatedDatabase:
 
 class RustService:
     def __init__(
-        self, database, sources=None, proxy=None, allow_offline=True, reference=False
+        self,
+        database,
+        sources=None,
+        proxy=None,
+        allow_offline=True,
+        reference=False,
+        check_auth_source_names=None,
     ):
         self.directory = ROOT / "test-output" / ("rust-http-" + uuid.uuid4().hex)
         self.directory.mkdir(parents=True)
@@ -109,6 +115,8 @@ class RustService:
             },
             "rsakey": {"public_keyfile": "public.key", "private_keyfile": "unused.pem"},
         }
+        if check_auth_source_names is not None:
+            config["check_auth_source_names"] = check_auth_source_names
         config_path = self.directory / "config.toml"
         config_path.write_text(encode_toml(config), encoding="utf-8")
         environment = os.environ.copy()

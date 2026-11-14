@@ -1,4 +1,6 @@
 allow_offline = true
+# 重名检查是否查询认证源；关闭后离线昵称只检查本地 namelink/users。
+check_auth_source_names = true
 figura_session = "2d"
 access_token = ""
 extra_skin_domains = [".minecraft.net", "minecraft.net"]

@@ -14,10 +14,16 @@ pub struct Config {
     pub rsakey: KeyConfig,
     #[serde(default)]
     pub allow_offline: bool,
+    #[serde(default = "default_check_auth_source_names")]
+    pub check_auth_source_names: bool,
     #[serde(default)]
     pub figura_session: String,
     #[serde(default)]
     pub access_token: String,
+}
+
+fn default_check_auth_source_names() -> bool {
+    true
 }
 
 #[derive(Clone, Deserialize)]
@@ -87,6 +93,17 @@ mod tests {
         assert_eq!(config.servers.len(), 4);
         assert_eq!(config.figura_session, "2d");
         assert!(config.allow_offline);
+        assert!(config.check_auth_source_names);
+        let example = include_str!("../config.example.toml");
+        let legacy: Config =
+            toml::from_str(&example.replace("check_auth_source_names = true", "")).unwrap();
+        assert!(legacy.check_auth_source_names);
+        let local_only: Config = toml::from_str(&example.replace(
+            "check_auth_source_names = true",
+            "check_auth_source_names = false",
+        ))
+        .unwrap();
+        assert!(!local_only.check_auth_source_names);
         assert!(config.access_token.is_empty());
     }
 }
