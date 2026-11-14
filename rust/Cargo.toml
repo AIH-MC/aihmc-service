@@ -7,9 +7,16 @@ publish = false
 
 [dependencies]
 axum = "0.8.9"
+base64 = "0.22"
+md5 = "0.8"
+regex = "1"
+reqwest = { version = "0.13.5", default-features = false, features = ["json", "rustls-no-provider"] }
 rsa = { version = "0.9", features = ["sha1"] }
+rustls = { version = "0.23", default-features = false, features = ["ring", "std", "tls12"] }
 serde = { version = "1.0.229", features = ["derive"] }
 serde_json = { version = "1", features = ["preserve_order"] }
+sha1 = { version = "0.10", features = ["oid"] }
+sha2 = "0.10"
 sqlx = { version = "0.9.0", default-features = false, features = ["runtime-tokio", "tls-rustls-ring", "mysql"] }
 tokio = { version = "1.54.1", features = ["macros", "rt-multi-thread", "net", "signal", "time"] }
 toml = "1.2.1"

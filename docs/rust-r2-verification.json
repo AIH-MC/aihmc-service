@@ -1,0 +1,44 @@
+{
+  "package_sha256": "80b2afa6637906d03139b14b99b1c0210bc4d571143d74630b2052d4d6cf3eff",
+  "toolchain": "1.95.0",
+  "ucenter_signed_query_endpoint_and_failure_mapping": "PASS",
+  "go_rust_rsa_interop": "PASS",
+  "stage": "R2",
+  "logs": [
+    {
+      "sha256": "e2d2230750aeaf37111886b619612b610bf263d03755520f92bb67b91e68ffa5",
+      "log": ".local/rust-migration/logs/r2-all-tests.log"
+    },
+    {
+      "sha256": "6ef32fb32257c10b7792507625e18ae52ad43897613b6f1f8103e3b02c7ec54f",
+      "log": ".local/rust-migration/logs/r2-runtime-check.log"
+    },
+    {
+      "sha256": "ef77e916419cf902a671b18f03c3217c104428d3fd32dfa4b599c997302aabbf",
+      "log": "test-output/windows-x64/logs/clippy.log"
+    },
+    {
+      "sha256": "6abb5aab2fa16d591ef4c51f05d782857dfd6a66ff8dbbfd07d8f3e1996972be",
+      "log": "test-output/windows-x64/logs/release.log"
+    },
+    {
+      "sha256": "bb5c5248bde31e263b942c959d2479087f6967212d55b51ef4812cd994121821",
+      "log": "test-output/windows-x64/logs/smoke.log"
+    }
+  ],
+  "real_database": "existing MariaDB / aihmc_migration_test",
+  "release": "PASS",
+  "packaged_runtime_start_stop": "PASS",
+  "target": "x86_64-pc-windows-msvc",
+  "actions_linux": "MANUAL/PENDING; agent forbidden to run; non-blocking",
+  "all_tests": {
+    "command": "cargo test --locked --target x86_64-pc-windows-msvc -- --include-ignored --test-threads=1",
+    "status": "PASS",
+    "passed": 15,
+    "ignored": 0
+  },
+  "nulls_identity_unique_constraints_transactions_and_deadlines": "PASS",
+  "clippy": "PASS",
+  "date": "2026-11-14",
+  "package_smoke": "PASS"
+}
