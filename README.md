@@ -36,6 +36,6 @@
 
 `.github/workflows/rust.yml` 只有 `workflow_dispatch`。用户手动运行后，原生编译测试 Linux x64、Linux ARM64、Windows x64，上传归档、SHA-256 和日志。提交和推送不自动触发。本次迁移按要求未执行 Actions，Linux 结果仍为 NOT RUN。
 
-工作流位于 `aihmc-auth` 分支；GitHub 的手动运行入口受默认分支工作流可见性规则限制。需要在仓库中提供该手动入口后由维护者运行，本次不修改默认分支、不代为触发。
+默认分支 `mc-auth` 已补齐 [Rust manual build 手动入口](https://github.com/AIH-MC/aihmc-service/actions/workflows/rust.yml)，入口固定检出 `aihmc-auth` 的 Rust 代码。也可在手动运行菜单选择 `aihmc-auth`；原 Go 工作流保持独立。本次仅登记入口，未触发构建。
 
 部署、备份、兼容限制和回滚见 [部署说明](docs/DEPLOYMENT.md)。
