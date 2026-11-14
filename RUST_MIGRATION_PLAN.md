@@ -213,7 +213,7 @@ PowerShell 打包脚本还需显式处理 cmdlet 失败，不能仅依赖 LASTEX
 | 阶段 5 回归与交付 | DONE（Windows 自动项）；31 项驱动测试、解压包集成、Python 独立归档通过 |
 | 本地 Windows 编译测试 | PASS：fmt、Clippy、8 Rust 单元、31 驱动测试、发布包及解压包 6 项集成 |
 | 三平台 Actions | NOT RUN，用户要求本次不执行，未来仅手动触发 |
-| 真实插件及上游人工验收 | MANUAL/PENDING |
+| 实服及启动客户端认证（人工验收） | SKIPPED（用户要求跳过） |
 
 本轮无剩余代码实施；完整验收及手动待验项见 `docs/VALIDATION.md`。Python 基线差异见 `docs/PYTHON_BASELINE.md`。每阶段记录命令、工具链、架构、日志、实际通过/失败/未运行以及提交推送结果。
 

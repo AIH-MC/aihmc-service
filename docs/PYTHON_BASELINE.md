@@ -48,4 +48,4 @@ if ($buildExitCode -ne 0) {
 
 ## 验证状态
 
-阶段完成时以 `build.log` 的前台 unittest 输出记录结果。Linux 与 Actions 未运行，真实插件/上游账号为 MANUAL/PENDING，不宣称已验证。
+阶段完成时以 `build.log` 的前台 unittest 输出记录结果。Linux 与 Actions 未运行，实服验证及启动客户端认证为人工验收／SKIPPED（用户要求跳过），不宣称已验证。

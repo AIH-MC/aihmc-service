@@ -3,6 +3,7 @@ use serde_json::json;
 use crate::{
     auth, db,
     error::{ApiError, ApiResult},
+    names,
     state::AppState,
 };
 
@@ -27,6 +28,16 @@ pub async fn link(state: &AppState, uuid: &str, new_uuid: &str) -> ApiResult<()>
 }
 
 pub async fn rename(state: &AppState, uuid: &str, username: &str) -> ApiResult<()> {
+    let uuid = uuid.replace('-', "");
+    let offline = sqlx::query("SELECT uuid FROM offline WHERE uuid = ?")
+        .bind(&uuid)
+        .fetch_optional(&state.pool)
+        .await
+        .map_err(ApiError::internal)?;
+    if offline.is_some() {
+        names::offline_name(state, &uuid, username, true).await?;
+        return Ok(());
+    }
     if auth::check_name(state, username).await?.is_some() {
         return Err(ApiError::message(400, "改名失败，可能该玩家名已存在"));
     }

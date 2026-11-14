@@ -1,4 +1,4 @@
-# Rust 迁移验收记录
+# Rust 迁移验收记录（历史阶段）
 
 日期：2026-11-14；平台：Windows x64；Rust 1.95.0；Python 3.13.12；复用系统已运行的 MariaDB 10.6。
 
@@ -25,7 +25,7 @@
 
 ## 发布包
 
-- 文件：`test-output/artifacts/aihmc-auth-windows-x64.zip`（本地生成，按 .gitignore 不提交二进制）。
+- 当时文件：`test-output/artifacts/aihmc-auth-windows-x64.zip`（后续 nickname 构建会覆盖此路径；最新结果见 `OFFLINE_NICKNAME.md`）。
 - SHA-256：`9310218eae2156f59ac57c3919b13bbe34a5860219858decf98c0845d3e52946`。
 - 内容：可执行文件、TOML 示例、默认皮肤与文档资源、keys/textures 目录标记、部署说明。
 - 已核对不含 config.toml/config.yml、真实公钥/私钥、数据库凭据、缓存或本地索引。
@@ -45,7 +45,7 @@
 | Linux x64 编译、测试与包冒烟 | NOT RUN | 用户要求本地仅 Windows，Actions 不运行 |
 | Linux ARM64 编译、测试与包冒烟 | NOT RUN | 同上 |
 | GitHub Actions（含 Windows） | NOT RUN | 用户要求仅手动，当前未触发 |
-| 真实插件登录、真实上游账号 | MANUAL/PENDING | 本次使用受控本地上游，无真实账号操作 |
+| 实服验证、启动客户端认证（人工） | SKIPPED | 用户后续明确要求跳过；不作为阻塞条件 |
 | 生产部署/流量切换 | NOT PERFORMED | 不在本轮授权范围 |
 
 这些状态不记为 PASS，也不阻止已授权的实施与交付。本轮无剩余代码实施；维护者之后按需手动运行 Actions 和人工验收。

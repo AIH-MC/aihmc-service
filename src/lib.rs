@@ -5,6 +5,7 @@ pub mod error;
 pub mod figura;
 pub mod head;
 pub mod http;
+pub mod names;
 pub mod offline;
 pub mod profile;
 pub mod skin;

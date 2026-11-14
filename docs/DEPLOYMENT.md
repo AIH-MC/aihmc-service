@@ -16,6 +16,6 @@ Rust 已覆盖原业务路由。Windows 自动验收包括真实 HTTP、现有 M
 
 API 保留原 `/docs`、`/redoc`、`/openapi.json` 及 Swagger OAuth 重定向入口；OpenAPI 为从 Python 基线导出的静态兼容契约。Swagger/Redoc 页面和原版一样从外部 CDN 加载前端资源。
 
-已确认且保留的旧行为：资料关联写库成功仍返回 400；带 IP 的 hasJoined 查询拼接；Mojang CSL 不下载材质；重名 INSERT IGNORE；强制改名在持续数据库错误时的无界重试。详见 `docs/PYTHON_BASELINE.md`，本轮没有顺带修复。
+资料关联写库成功仍返回 400、带 IP 的 hasJoined 查询拼接、Mojang CSL 不下载材质仍按基线保留。后续 nickname 功能已替换冲突名称分配：在线名称优先、离线随机名持久化，UUID 不变；不再使用会覆盖其他账户映射或无限重试的旧改名路径。见 `docs/OFFLINE_NICKNAME.md`。
 
-真实插件/真实上游账号与生产流量未操作，验收 MANUAL/PENDING。Actions 按用户要求未运行，Linux x64/ARM64 为 NOT RUN，不使用 Windows 结果替代。
+实服验证和启动客户端认证均为人工验收／SKIPPED（用户要求跳过）；生产流量未操作。Actions 按用户要求未运行，Linux x64/ARM64 为 NOT RUN，不使用 Windows 结果替代。

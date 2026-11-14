@@ -111,8 +111,17 @@ class DifferentialHTTP(unittest.TestCase):
                 (ROOT / "assets/alex.png").read_bytes()
             )
         self.compare("GET", "/textures/fixture")
-        for path in ["/openapi.json", "/docs", "/redoc", "/docs/oauth2-redirect"]:
+        for path in ["/docs", "/redoc", "/docs/oauth2-redirect"]:
             self.compare("GET", path)
+        expected_schema = self.services[0].client.get("/openapi.json").json()
+        actual_schema = self.services[1].client.get("/openapi.json").json()
+        nickname_route = actual_schema["paths"].pop("/offline/profile/{username}")
+        self.assertEqual(nickname_route["get"]["security"], [{"HTTPBearer": []}])
+        actual_schema["components"]["schemas"].pop("OfflineProfile")
+        actual_schema["components"]["schemas"]["OfflineReg"]["properties"].pop(
+            "nickname"
+        )
+        self.assertEqual(actual_schema, expected_schema)
         for table in ["userlink", "namelink", "users", "skins", "figura_server"]:
             self.assertEqual(
                 self.databases[0].query(f"SELECT * FROM {table}"),

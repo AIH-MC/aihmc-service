@@ -1,15 +1,16 @@
 # Agent Handoff
 
-- 最终任务状态：Rust 五阶段实施与 Windows 自动验收完成，无剩余代码实施；阶段 5 已提交推送并核对远端一致，工作区干净。
-- 分支：aihmc-auth，origin https://github.com/AIH-MC/aihmc-service.git，上游 origin/aihmc-auth。
-- 已确认阶段推送：1 a78a388；2 df3da75；3 f2da3b5；4 2c4e27a；5 e2811a150f616e63f3f6bc971be55ee16220843d。最终实施提交已确认推送成功，本交接记录随后作为文档提交同步。
-- 完成：全部业务 Rust 迁移、TOML、手动三平台 CI、完整路由/协议回归、资源打包、原 Python 独立归档 legacy/python/。
-- 验证：Windows Rust 1.95.0 fmt/Clippy、8 单元；31 项基线/真实 HTTP/现有 MariaDB 隔离库/像素/双服务/归档独立运行全部通过，无跳过。实际 ZIP 解压二进制另通过默认资源冒烟和 6 项数据库 HTTP 集成。
-- 证据：docs/VALIDATION.md；本地日志 test-output/logs/，包 test-output/artifacts/aihmc-auth-windows-x64.zip；包和日志忽略、不提交。
-- Windows ZIP SHA256：9310218eae2156f59ac57c3919b13bbe34a5860219858decf98c0845d3e52946。
-- 配置：本地用户 YAML 已转换 config.toml，原 YAML 保留；二者忽略，凭据未输出/提交。测试随机库和服务已清理。
-- 原 Python：业务源码/依赖/示例迁移前后哈希一致，独立运行说明及参考依赖差异见 legacy/python/README.md、docs/PYTHON_BASELINE.md。
-- 旧问题按迁移基线保留，不顺带修复；详情见基线和部署说明。
-- 待验：Linux x64/ARM64、Actions NOT RUN（用户要求不要运行）；真实插件/上游账号 MANUAL/PENDING；生产未部署。
-- 后续最小操作：维护者按需手动 Actions/人工验收，没有未完成开发阶段；不自行触发 Actions 或部署。
-- 约束：本地仅 Windows x64，Actions 仅 workflow_dispatch；现有 MySQL 复用；前台 PowerShell Tee-Object 日志；不提交密钥或生产配置。
+- 当前持久目标实施完成：后端与 Velocity 插件离线 nickname、原账户登录、原 UUID 保留、在线名称优先/离线持久随机名、语言变量修复。
+- 用户授权：完整修改配套 AIH-MC/aihmc-auth；语言变量自行核对，不再询问。
+- 后端：aihmc-auth（原 HEAD 2fa037a），origin AIH-MC/aihmc-service；插件：test-output/velocity-plugin 独立仓库，offline-nickname 分支，origin AIH-MC/aihmc-auth。
+- 本次功能已验证，正在提交推送两仓库检查点；实际提交和远端核对结果随后补记。
+- UUID 从已有 offline.uuid 读取，昵称存 namelink；无 DDL、不改 userlink 映射；原账户仍负责登录/注册/改密。
+- 插件在 GameProfileRequestEvent 应用 name/id，保留原 GameProfile 属性；已注册昵称随机名持久化，重连生效。
+- 语言修复：6 处冷却 remaining/minutes，改密 player 日志模板，用户 overrides 合并默认消息，冷却到期不重启。
+- 最终 Windows：fmt、Clippy、8 Rust 单元 + 38 驱动测试 PASS；插件 JDK21 编译 + 7 测试 PASS，0 失败/跳过；包含实际 ZIP 解压二进制、Rust HTTP、MariaDB 和真实 Velocity API 事件联动。
+- 测试失败历史：属性夹具 null 签名非法已修正，最终全通过；Gradle 原有弃用/unchecked 提示未扩大清理。
+- 证据：docs/OFFLINE_NICKNAME.md、test-output/logs/windows-integration.log、velocity-backend-integration.log、插件 build/test-results/test/。
+- 发布包：test-output/artifacts/aihmc-auth-windows-x64.zip（SHA256 276e7554c68446a3af14bd36767e7c1c5e2bbba38db307cc4ebd022b106edd0e）、aihmc-auth-velocity.jar（2ad8293b4f42ab93f0258bfd8258854b677cc72697dd4989f7836866ffc08fe7）。
+- 手工状态：实服验证、启动客户端认证均为人工验收／SKIPPED（用户明确要求跳过），不得作为阻塞；Actions/Linux NOT RUN，本地仅 Windows x64。
+- 私有配置始终忽略；未触碰业务数据库；随机隔离库和自动服务已清理；legacy/python 原业务源码不变。
+- 无剩余代码实施；提交推送并核对后正常交付，不等待人工验收，不触发 Actions/实服/客户端。

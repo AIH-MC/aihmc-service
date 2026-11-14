@@ -1,9 +1,9 @@
-use rand::RngExt;
 use serde_json::{Value, json};
 
 use crate::{
     db,
     error::{ApiError, ApiResult},
+    names,
     state::AppState,
     upstream,
 };
@@ -27,48 +27,6 @@ pub async fn metadata(state: &AppState) -> ApiResult<Value> {
     )
 }
 
-pub async fn save_other_data(state: &AppState, uuid: &str, username: &str) -> ApiResult<()> {
-    db::execute(
-        state,
-        "INSERT IGNORE INTO userlink (uuid, new_uuid) VALUES (?, ?)",
-        &[json!(uuid), json!(uuid)],
-    )
-    .await;
-    let success = db::execute(
-        state,
-        "INSERT IGNORE namelink (uuid, username) VALUES (?, ?)",
-        &[json!(uuid), json!(username)],
-    )
-    .await;
-    if !success {
-        force_rename(state, uuid).await?;
-    }
-    Ok(())
-}
-
-async fn force_rename(state: &AppState, uuid: &str) -> ApiResult<String> {
-    // Preserve the existing retry behavior; outage handling is a separate change.
-    loop {
-        let suffix: String = {
-            let alphabet = b"abcdefghijklmnopqrstuvwxyz0123456789";
-            let mut rng = rand::rng();
-            (0..4)
-                .map(|_| alphabet[rng.random_range(0..alphabet.len())] as char)
-                .collect()
-        };
-        let name = format!("AIHMC_{suffix}");
-        if db::execute(
-            state,
-            "INSERT INTO namelink (uuid, username) VALUES (?, ?) ON DUPLICATE KEY UPDATE username = ?",
-            &[json!(uuid), json!(name), json!(name)],
-        )
-        .await
-        {
-            return Ok(name);
-        }
-    }
-}
-
 pub async fn save_player(
     state: &AppState,
     profile: &Value,
@@ -81,26 +39,7 @@ pub async fn save_player(
     let name = profile["name"]
         .as_str()
         .ok_or_else(|| ApiError::internal("profile has no name"))?;
-    let offline = db::query(
-        state,
-        "SELECT username FROM offline WHERE username = ?",
-        &[json!(name)],
-    )
-    .await;
-    let final_name = if !offline.is_empty() {
-        force_rename(state, uuid).await?
-    } else {
-        save_other_data(state, uuid, name).await?;
-        let rows = db::query(
-            state,
-            "SELECT username FROM namelink WHERE uuid = ?",
-            &[json!(uuid)],
-        )
-        .await;
-        rows.first()
-            .and_then(|row| db::text(row, "username"))
-            .unwrap_or_else(|| name.to_string())
-    };
+    let final_name = names::online_name(state, uuid, name).await?;
     if let Some(texture) = profile["properties"]
         .as_array()
         .and_then(|properties| properties.iter().find(|p| p["name"] == "textures"))

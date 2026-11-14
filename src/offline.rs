@@ -1,8 +1,10 @@
-use serde_json::json;
+use serde_json::{Value, json};
+use sqlx::Row;
 
 use crate::{
-    auth, db,
+    db,
     error::{ApiError, ApiResult},
+    names,
     state::AppState,
     utils,
 };
@@ -13,6 +15,7 @@ pub async fn register(
     password: &str,
     confirmation: &str,
     ip: Option<&str>,
+    nickname: Option<&str>,
 ) -> ApiResult<String> {
     if !state.config.allow_offline {
         return Err(ApiError::message(400, "注册失败，已关闭离线登录注册"));
@@ -20,6 +23,8 @@ pub async fn register(
     if password != confirmation {
         return Err(ApiError::message(400, "密码和确认密码不一致"));
     }
+    let nickname = nickname.unwrap_or(username);
+    names::validate_nickname(nickname)?;
     let uuid = utils::offline_uuid(username);
     let hash = utils::hash_password(password).map_err(ApiError::internal)?;
     if !db::execute(
@@ -34,8 +39,47 @@ pub async fn register(
             format!("注册失败，玩家 {username} 已存在"),
         ));
     }
-    auth::save_other_data(state, &uuid, username).await?;
+    sqlx::query("INSERT IGNORE INTO userlink (uuid, new_uuid) VALUES (?, ?)")
+        .bind(&uuid)
+        .bind(&uuid)
+        .execute(&state.pool)
+        .await
+        .map_err(ApiError::internal)?;
+    names::offline_name(state, &uuid, nickname, true).await?;
     Ok("注册成功".into())
+}
+
+pub async fn profile(state: &AppState, username: &str) -> ApiResult<Value> {
+    let account = sqlx::query("SELECT username, uuid FROM offline WHERE username = ?")
+        .bind(username)
+        .fetch_optional(&state.pool)
+        .await
+        .map_err(ApiError::internal)?;
+    let registered = account.is_some();
+    let (username, uuid) = match account {
+        Some(row) => {
+            let username: String = row.get("username");
+            let uuid: Option<String> = row.get("uuid");
+            (
+                username,
+                uuid.ok_or_else(|| ApiError::internal("offline account has no stored UUID"))?,
+            )
+        }
+        None => (username.to_string(), utils::offline_uuid(username)),
+    };
+    let existing = sqlx::query("SELECT username FROM namelink WHERE uuid = ?")
+        .bind(&uuid)
+        .fetch_optional(&state.pool)
+        .await
+        .map_err(ApiError::internal)?;
+    let requested = existing
+        .and_then(|row| row.get::<Option<String>, _>("username"))
+        .filter(|name| !name.is_empty())
+        .unwrap_or_else(|| username.clone());
+    let nickname = names::offline_name(state, &uuid, &requested, registered).await?;
+    Ok(
+        json!({"id": uuid, "name": nickname, "username": username, "registered": registered, "properties": []}),
+    )
 }
 
 pub async fn login(state: &AppState, username: &str, password: &str) -> ApiResult<String> {

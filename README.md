@@ -4,6 +4,8 @@
 
 保留多源 Yggdrasil 认证、离线账户、Figura、资料关联/改名、CSL、材质缓存及 PNG 头像接口。迁移及已保留的旧行为见 [迁移计划](RUST_MIGRATION_PLAN.md)和 [Python 基线](docs/PYTHON_BASELINE.md)。
 
+离线账户支持 `/nickname <昵称>`：登录器和登录命令继续使用原账户名，重连后以昵称进服，UUID 不变。与正版/外置名称冲突时只给离线账户分配持久随机名。需同时更新插件，详见 [昵称与语言变量说明](docs/OFFLINE_NICKNAME.md)。
+
 ## 运行
 
 1. 解压对应平台发布包，复制 `config.example.toml` 为 `config.toml`。

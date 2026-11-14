@@ -5,6 +5,7 @@ import json
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
+DESTINATION = ROOT / "legacy/python/assets"
 sys.path.insert(0, str(ROOT))
 
 from tests.baseline_support import main
@@ -22,9 +23,9 @@ with TestClient(main.app) as client:
         if name.endswith(".html.json"):
             # Encode the original HTML verbatim so its meaningful string contents
             # survive Git newline handling without source trailing whitespace.
-            (ROOT / "assets" / name).write_text(
+            (DESTINATION / name).write_text(
                 json.dumps(response.text, ensure_ascii=False) + "\n", encoding="utf-8"
             )
         else:
-            (ROOT / "assets" / name).write_bytes(response.content)
-        print(f"Exported {route} -> assets/{name}")
+            (DESTINATION / name).write_bytes(response.content)
+        print(f"Exported legacy {route} -> {DESTINATION / name}")

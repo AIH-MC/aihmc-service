@@ -26,6 +26,7 @@ pub fn router(state: AppState) -> Router {
             get(|| async { Json(json!({"message": "验证通过"})) }),
         )
         .route("/offline/check/{username}", get(offline_check))
+        .route("/offline/profile/{username}", get(offline_profile))
         .route("/profile/rstname/{uuid}", get(reset_name))
         .route("/offline/reg", post(admin))
         .route("/offline/login", post(admin))
@@ -336,6 +337,13 @@ async fn offline_check(
     Ok(message(offline::check(&state, &username).await?))
 }
 
+async fn offline_profile(
+    State(state): State<AppState>,
+    Path(username): Path<String>,
+) -> ApiResult<Json<Value>> {
+    Ok(Json(offline::profile(&state, &username).await?))
+}
+
 async fn reset_name(
     State(state): State<AppState>,
     Path(uuid): Path<String>,
@@ -397,6 +405,16 @@ async fn admin(
         _ => &["uuid", "username"],
     };
     validate_body(&body, fields, path == "/offline/reg")?;
+    if path == "/offline/reg"
+        && let Some(nickname) = body.get("nickname")
+        && !nickname.is_null()
+        && !nickname.is_string()
+    {
+        return Err(ApiError::validation(vec![json!({
+            "type": "string_type", "loc": ["body", "nickname"],
+            "msg": "Input should be a valid string", "input": nickname
+        })]));
+    }
     let field = |name: &str| body[name].as_str().unwrap_or_default();
     let peer_ip = peer.ip().to_string();
     let ip = headers
@@ -414,6 +432,7 @@ async fn admin(
                 field("passwd"),
                 field("repasswd"),
                 body["ip"].as_str(),
+                body["nickname"].as_str(),
             )
             .await?
         }
