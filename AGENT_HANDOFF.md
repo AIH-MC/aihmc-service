@@ -1,3 +1,19 @@
+# 当前交付：2026-11-14 名称重置与离线重连修复
+
+- 状态：实施及自动验证完成，无剩余代码实施；本节随本次修复提交交付。后端分支 aihmc-auth，插件分支 offline-nickname，保持原上游；最终提交、推送后核对远端 HEAD，结果见交付回复。
+- 后端：重置从原始认证源读原名，解析源/进服 UUID 映射，不改 userlink；缺少昵称映射时插入，名称冲突和上游失败明确返回错误。离线重置恢复账户名。昵称分配处理已实测的 MariaDB 1213 死锁，有界重试并保留原请求名。
+- 插件：跳过 Void 响应反序列化，其他 JSON 解析失败不再吞掉；在线分流核对名称所属源 UUID，避免两个无关 200 绕过离线昵称；记录实际应用的 account/nickname/uuid。改名/重置提示重连生效。
+- 离线原因证据：临时恢复旧分流条件时，真实 Rust/MariaDB + 插件事件调用链的新回归失败；恢复修复条件后通过。该场景为名称对应在线 A、客户端 UUID 对应在线 B，旧条件误判在线，跳过离线资料应用。测试认证源为 HTTP 夹具，不冒称验证了实服现场的具体认证源数据。
+- 最终 Windows PASS：fmt、Clippy、8 Rust 单元测试、44 项业务/数据库/对照测试、release 打包及 ZIP 解压 HTTP smoke；昵称并发额外 5 轮 PASS；JDK21 插件 12 测试（9 单元/HTTP + 3 后端集成）PASS，0 失败/跳过。
+- 回归涵盖真实命令分发、实际 DisconnectEvent、新插件状态下重连、原账户密码、UUID 不变、在线认证后重置、UUID 映射及名称冲突。认证源及连接对象为夹具；真实后端进程和 MariaDB 隔离库已清理。
+- 失败历史：重置原名/映射/源不可用、Void 和旧离线分流均有 RED 证据；并发死锁日志留存。新增无效 JSON 测试最初使用裸字符串被 Gson 宽松模式接受，已改为确定不完整的 JSON 对象，最终通过；Black 多进程在受限环境停滞，改为单进程完成。无未解决自动测试失败。
+- 证据：docs/OFFLINE_NICKNAME.md；test-output/logs/name-fix-windows.log、name-reset-red.log、void-red.log、nickname-real-chain-red.log、nickname-real-chain.log、nickname-concurrency.log、nickname-deadlock-red.log；插件 build/test-results/test/。
+- 更新产物：test-output/artifacts/aihmc-auth-windows-x64.zip，SHA256 63a888b4c0bed97a10b80f9f7e381fd2e3e2bccbb31921d66f60179ff8740449；aihmc-auth-velocity.jar，SHA256 ac4caf5e3cbbc0094df3d8e6882caea96b6f5324cd908db54d4d66779e94fe59。
+- 人工实服及启动客户端认证：SKIPPED（用户要求），不作为阻塞；Linux 本地构建、Actions：NOT RUN。未改生产配置/业务数据，未增加数据库服务器或依赖。
+- 交付需同时更新后端与插件；启动器仍用原账户名，/nickname 后重连生效。无新阶段或其他实施任务。
+
+---
+
 # Agent Handoff
 
 - 当前持久目标实施完成：后端与 Velocity 插件离线 nickname、原账户登录、原 UUID 保留、在线名称优先/离线持久随机名、语言变量修复。

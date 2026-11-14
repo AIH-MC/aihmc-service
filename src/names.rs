@@ -52,12 +52,12 @@ async fn available(state: &AppState, uuid: &str, name: &str) -> ApiResult<bool> 
     Ok(auth::check_name(state, name).await?.is_none())
 }
 
-fn duplicate(error: &sqlx::Error) -> bool {
+fn database_error_is(error: &sqlx::Error, code: &str) -> bool {
     error
         .as_database_error()
         .and_then(|error| error.code())
         .as_deref()
-        == Some("1062")
+        == Some(code)
 }
 
 async fn write_name(
@@ -107,9 +107,15 @@ pub async fn offline_name(
                 transaction.commit().await.map_err(ApiError::internal)?;
                 return Ok(candidate);
             }
-            Err(error) if duplicate(&error) => {
+            Err(error) if database_error_is(&error, "1062") => {
                 transaction.rollback().await.map_err(ApiError::internal)?;
                 candidate = random_name();
+            }
+            Err(error) if database_error_is(&error, "1213") => {
+                // InnoDB can choose this transaction as a deadlock victim even
+                // when each account has its own UUID. Retry the same requested
+                // name; a deadlock alone does not establish a name conflict.
+                transaction.rollback().await.map_err(ApiError::internal)?;
             }
             Err(error) => return Err(ApiError::internal(error)),
         }
@@ -127,6 +133,21 @@ pub async fn online_name(state: &AppState, uuid: &str, source_name: &str) -> Api
         .and_then(|row| row.get::<Option<String>, _>("username"))
         .filter(|name| !name.is_empty())
         .unwrap_or_else(|| source_name.to_string());
+    reserve_online_name(state, uuid, &display, true).await?;
+    Ok(display)
+}
+
+pub async fn set_online_name(state: &AppState, uuid: &str, display: &str) -> ApiResult<()> {
+    validate_nickname(display)?;
+    reserve_online_name(state, uuid, display, false).await
+}
+
+async fn reserve_online_name(
+    state: &AppState,
+    uuid: &str,
+    display: &str,
+    create_identity_link: bool,
+) -> ApiResult<()> {
     let mut replacement: Option<String> = None;
     for _ in 0..32 {
         // Only a displaced offline account needs a replacement. Resolve it
@@ -139,7 +160,7 @@ pub async fn online_name(state: &AppState, uuid: &str, source_name: &str) -> Api
         }
         let mut transaction = state.pool.begin().await.map_err(ApiError::internal)?;
         let owner = sqlx::query("SELECT uuid FROM namelink WHERE username = ? FOR UPDATE")
-            .bind(&display)
+            .bind(display)
             .fetch_optional(&mut *transaction)
             .await
             .map_err(ApiError::internal)?;
@@ -165,7 +186,7 @@ pub async fn online_name(state: &AppState, uuid: &str, source_name: &str) -> Api
                     .execute(&mut *transaction)
                     .await;
                 if let Err(error) = result {
-                    if duplicate(&error) {
+                    if database_error_is(&error, "1062") {
                         transaction.rollback().await.map_err(ApiError::internal)?;
                         replacement = Some(random_name());
                         continue;
@@ -174,18 +195,20 @@ pub async fn online_name(state: &AppState, uuid: &str, source_name: &str) -> Api
                 }
             }
         }
-        match write_name(&mut transaction, uuid, &display).await {
+        match write_name(&mut transaction, uuid, display).await {
             Ok(()) => {
-                sqlx::query("INSERT IGNORE INTO userlink (uuid, new_uuid) VALUES (?, ?)")
-                    .bind(uuid)
-                    .bind(uuid)
-                    .execute(&mut *transaction)
-                    .await
-                    .map_err(ApiError::internal)?;
+                if create_identity_link {
+                    sqlx::query("INSERT IGNORE INTO userlink (uuid, new_uuid) VALUES (?, ?)")
+                        .bind(uuid)
+                        .bind(uuid)
+                        .execute(&mut *transaction)
+                        .await
+                        .map_err(ApiError::internal)?;
+                }
                 transaction.commit().await.map_err(ApiError::internal)?;
-                return Ok(display);
+                return Ok(());
             }
-            Err(error) if duplicate(&error) => {
+            Err(error) if database_error_is(&error, "1062") => {
                 transaction.rollback().await.map_err(ApiError::internal)?;
             }
             Err(error) => return Err(ApiError::internal(error)),

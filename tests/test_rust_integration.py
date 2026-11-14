@@ -175,7 +175,7 @@ class RustDatabaseHTTP(unittest.TestCase):
         self.assertEqual(self.client.get(f"/profile/rstname/{uuid}").status_code, 200)
         self.assertEqual(
             self.database.query("SELECT username FROM namelink")[0]["username"],
-            "Original",
+            "Player",
         )
         for path in [
             "/auth/sessionserver/session/minecraft/hasJoined?username=P&serverId=s",

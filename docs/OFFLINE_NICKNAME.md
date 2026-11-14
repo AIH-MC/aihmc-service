@@ -73,3 +73,16 @@
 - 实服和客户端认证依用户要求人工 SKIPPED；无剩余代码实施。提交推送核对结果记录于 AGENT_HANDOFF.md。
 
 提交推送已核对：后端实施提交 `66453f5`（aihmc-auth）；插件实施提交 `ddf0290`（offline-nickname）。两个远端均与本地对应实施提交一致，后续仅同步交接确认文档；无剩余实施。
+
+## 2026-11-14 名称重置与离线重连修复
+
+- 正版/外置重置从 `last_source` 对应的原始资料接口取得原名，不再从可能被昵称覆盖的 `users.username` 恢复。按 `userlink` 解析源 UUID 和进服 UUID，保留关联；源不可用、UUID 不符、多个来源关联或在线名称冲突时明确失败，不返回虚假成功。
+- 重置支持映射缺失时插入昵称；在线原名被离线昵称占用时，只为离线账户分配新名，双方 UUID 不变。离线重置恢复原账户名（冲突仍由名称分配器处理）。
+- 插件不再反序列化 `Void.class`；其他 JSON 解析失败通过 Future 报错，不继续当作成功响应。
+- 已复现离线昵称绕过场景：名称查询属于 A、客户端 UUID 查询属于 B，两次 200 被旧代码误判成在线连接，跳过离线昵称应用。现在核对名称对应的源 UUID 与客户端 UUID；仍必须通过后续在线认证才能获得正版登录状态。
+- 在应用离线资料时记录 account/nickname/uuid，便于区分代理已应用昵称与后端服转发问题；不记录密码、Token。
+- 并发回归捕获 InnoDB 1213 死锁，昵称分配现在在原有 32 次上限内回滚重试，死锁本身不会触发随机改名。
+- 改名和重置仍在重新连接后生效；`/login` 不接受昵称参数，启动器继续使用原账户名。
+- 回归覆盖真实 Windows Rust 进程、现有 MariaDB 隔离库、HTTP 认证源夹具、Velocity API 事件及命令类；认证源响应、连接对象为测试夹具，未启动真实 Velocity 服务器或 Minecraft 客户端。实服及客户端：SKIPPED（用户要求）；Actions/Linux：NOT RUN。
+
+验证结果：Windows fmt/Clippy、8 Rust 单元测试、44 项业务/数据库回归及 ZIP 解压启动检查通过；昵称并发额外 5 轮通过；插件 JDK21 编译及 12 项测试通过（0 失败/跳过）。旧在线分流判断在真实后端调用链回归中失败，修复后通过。证据见 `test-output/logs/name-fix-windows.log`、`nickname-real-chain-red.log`、`nickname-real-chain.log`、`nickname-concurrency.log`。本地新产物位于 `test-output/artifacts/`，无需数据库 DDL；部署需同时更新后端及插件。

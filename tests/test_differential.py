@@ -105,7 +105,18 @@ class DifferentialHTTP(unittest.TestCase):
                 "INSERT INTO users (uuid,username) VALUES (%s,%s)",
                 (player_uuid, "Original"),
             )
+        # Reset now restores the offline account name, not a cached users alias.
         self.compare("GET", f"/profile/rstname/{player_uuid}")
+        self.assertEqual(
+            self.databases[1].query(
+                "SELECT username FROM namelink WHERE uuid=%s", (player_uuid,)
+            )[0]["username"],
+            "Player",
+        )
+        # Keep the remaining state comparison focused on unchanged routes.
+        self.databases[0].query(
+            "UPDATE namelink SET username=%s WHERE uuid=%s", ("Player", player_uuid)
+        )
         for service in self.services:
             (service.directory / "textures/fixture").write_bytes(
                 (ROOT / "assets/alex.png").read_bytes()
