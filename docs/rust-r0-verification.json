@@ -1,0 +1,30 @@
+{
+  "date": "2026-11-14",
+  "source_commit": "cc458ab7d709323bdf4b9ca6f7ac1c857c4cfa09",
+  "platform": "windows-x64",
+  "go": "1.26.4",
+  "database": "existing MariaDB, isolated aihmc_migration_test",
+  "tests": {
+    "passed_top_level": 33,
+    "command": "go test -count=1 -p 1 -v ./...",
+    "skipped": 0,
+    "result": "PASS"
+  },
+  "windows_build": "PASS",
+  "check_config": "PASS",
+  "optional_php_execution": "NOT RUN",
+  "logs": [
+    {
+      "log": "r0-go-tests-serial.log",
+      "sha256": "b21df2ce89215f5ada3e083733c880705c7f87f9b28ace9c12301ee729218d8f"
+    },
+    {
+      "log": "r0-go-build.log",
+      "sha256": "519ff0e9c590e7bedc1e51c5c2260f799b2da600db154863346b0cddaf241038"
+    },
+    {
+      "log": "r0-go-config.log",
+      "sha256": "fec97b019218b952ee3e6e33c0905a9f2f20057544de66b55860b94ee7d1100d"
+    }
+  ]
+}
