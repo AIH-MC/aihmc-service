@@ -170,12 +170,14 @@ Go 与 Rust 在相同初始隔离数据、相同受控上游下分别运行请�
 
 ## 8. 最终完成标准与当前状态
 
-- [ ] Rust 已替换全部现有受支持服务路径，协议、状态与数据副作用通过对照。
-- [ ] 既有配置、数据库、身份、令牌、密钥、材质继续可用，无业务 schema 迁移。
-- [ ] Go 完整存档于 `archive/go/`，归档可独立构建且不含真实秘密。
-- [ ] 根目录 Rust 的三平台手动 Action 配置交付，Windows 本地实际构建成功；Actions/Linux 结果非阻塞 MANUAL/PENDING。
-- [ ] Windows 正式发布包解包冒烟通过，SHA256、平台、提交与日志一致；两个 Linux 发布包由人工运行验收，非阻塞 MANUAL/PENDING。
-- [ ] 部署回退说明、人工项状态及最终 `AGENT_HANDOFF.md` 更新完成。
-- [ ] 各阶段提交已推送并确认，交接说明待人工运行 Actions 的目标分支及步骤。
+- [x] Rust 已替换全部现有受支持服务路径，协议、状态与数据副作用通过对照。
+- [x] 既有配置、数据库、身份、令牌、密钥、材质继续可用，无业务 schema 迁移。
+- [x] Go 完整存档于 `archive/go/`，归档可独立构建且不含真实秘密。
+- [x] 根目录 Rust 的三平台手动 Action 配置交付，Windows 本地实际构建成功；Actions/Linux 结果非阻塞 MANUAL/PENDING。
+- [x] Windows 正式发布包解包冒烟通过，SHA256、平台、提交与日志一致；两个 Linux 发布包由人工运行验收，非阻塞 MANUAL/PENDING。
+- [x] 部署回退说明、人工项状态及最终 `AGENT_HANDOFF.md` 更新完成。
+- [x] 各阶段提交已推送并确认，交接说明待人工运行 Actions 的目标分支及步骤。
 
 实施授权及逐阶段证据见 `docs/RUST_MIGRATION_PROGRESS.md`。既有运行配置处理方式保持不变。
+
+最终状态（2026-11-14）：R0—R6自主实施和本地Windows自动验收完成。勾选表示本计划约定的交付范围完成，人工Actions/Linux、真实账号/客户端和生产操作仍为非阻塞MANUAL/PENDING。最终证据及阶段提交见实施记录。

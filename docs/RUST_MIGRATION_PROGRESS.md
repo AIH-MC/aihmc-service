@@ -122,3 +122,36 @@ Rust 提升至根目录，活动构建、测试及发布脚本使用根目录 Ca
 Windows ZIP仅含程序、配置模板、README和部署说明，文档/模板与源码一致，SHA256为 1a8a989ab0314ad1605baa4c7387b86c73fb3d21532d1ba15296d384bf8050c9。证据见 rust-r5-verification.json、rust-r5-contract-comparison.json；日志位于 .local/rust-migration/logs/r5-*.log 和 test-output/windows-x64/logs/。
 
 两个活动工作流均仅 workflow_dispatch，矩阵为Linux x64 musl、Linux ARM64 musl、Windows x64 MSVC。静态配置核验通过。Actions全部交由人工，Agent禁止运行；Linux编译、远端发布包、真实账号/客户端和生产项均为非阻塞 MANUAL/PENDING。
+
+
+R5 检查点：`bc8b52632143cf158133a45de542e94a941d4ddb` 已提交推送，远端核对一致。
+
+## R6 — 交付审计完成
+
+自主实施和本地 Windows 自动验收已全部完成，无剩余实施任务或已知验收失败。Rust 正式入口覆盖原服务路径；既有配置、六表、身份、令牌、密钥和材质路径保持兼容，无业务 schema 升级。R5 根目录验证和独立 Go 归档测试是最终布局证据，R3 真实 TCP 期限、R4 图像及实际材质证据继续有效。没有新增功能或扩大验收范围。
+
+| 阶段 | 已推送提交 | 验证 |
+| --- | --- | --- |
+| R0 | 25eb2048556ea6fad06212a7acce7b7c4824d04b | Go基线/配置/Windows |
+| R1 | 5c308b1446126370fa23579541770287fb774dff | Rust入口/配置/构建 |
+| 手动触发修正 | 734f5b9a6a5e1bc1b2beceec988574c8614fb5dc | 仅workflow_dispatch |
+| R2 | 4a66088442717db4a9fe973b833b587614555327 | 数据/协议/UCenter |
+| R3 | 5ff72c38f54699da3949dcccd807b344eadc07b1 | 认证/会话/真实TCP期限 |
+| R4 | c01473979facddf2d09ce9816a818c79fa5663b8 | 实际材质/头像/删除/完整入口 |
+| R5 | bc8b52632143cf158133a45de542e94a941d4ddb | 最终根目录/Go归档/正式包 |
+| R6 | 本文档检查点，提交见Git历史 | 交付记录/计划/手册审计 |
+
+Windows产物：test-output/windows-x64/artifacts/aihmc-service-windows-x64.zip，SHA256 `1a8a989ab0314ad1605baa4c7387b86c73fb3d21532d1ba15296d384bf8050c9`。包对应R5源码；R6仅更新计划、证据索引和交接手册，不改变程序、模板和包内文档。程序构建/打包日志在test-output/windows-x64/logs，完整集成日志在.local/rust-migration/logs。R5比较JSON只包含合成账号及归一化令牌，不包含真实运行秘密。
+
+| 未执行项目 | 状态及处理 |
+| --- | --- |
+| 三平台远端Actions及产物 | MANUAL/PENDING，全部交由人工，Agent禁止运行；不阻塞交付 |
+| Linux x64/ARM64 musl实际编译和目标运行 | MANUAL/PENDING，配置静态核验通过，未宣称实际编译成功 |
+| 真实UCenter账号/启动器/Minecraft客户端 | MANUAL/PENDING；受控上游实际进程测试已通过 |
+| 生产网关、切换、观察及实机回退 | MANUAL/PENDING，执行步骤见DEPLOYMENT.md |
+
+人工入口：mc-auth分支的Build Rust (manual)，路径.github/workflows/build.yml；原Rust manual build检出aihmc-auth分支，不能替代本实现验收。归档内旧workflow不处于根.github/workflows，不会执行。曾意外自动运行的43579298110已取消并确认终态，不重跑或监控。没有运行新的Actions，不以人工项目作为受阻条件。
+
+最终计划和AGENT_HANDOFF.md已更新。R6按文档检查点提交推送并核对远端；最终提交标识以Git历史为准，避免将提交本身写入同一提交造成循环更新。
+
+R6自动审计PASS：根工作流仅手动触发、三个目标准确、最终目录、60个已提交归档blob及工作区哈希、Windows包SHA256/白名单、全部Rust证据JSON均核对通过；git diff --check通过。

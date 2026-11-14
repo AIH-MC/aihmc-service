@@ -1,0 +1,17 @@
+{
+  "stage": "R6",
+  "implementation": "complete",
+  "local_automated_acceptance": "PASS",
+  "source_commit": "bc8b52632143cf158133a45de542e94a941d4ddb",
+  "package": "test-output/windows-x64/artifacts/aihmc-service-windows-x64.zip",
+  "sha256": "1a8a989ab0314ad1605baa4c7387b86c73fb3d21532d1ba15296d384bf8050c9",
+  "rust_tests": 27,
+  "go_archive_top_level_tests": 33,
+  "http_cases_each_actual_executable": 63,
+  "archived_files_verified": 60,
+  "actions": "MANUAL/PENDING; agent prohibited from running; nonblocking",
+  "linux_musl_builds": "MANUAL/PENDING",
+  "real_accounts_clients_production": "MANUAL/PENDING",
+  "remaining_implementation": [],
+  "known_failed_acceptance": []
+}
