@@ -107,11 +107,11 @@ AGENT_HANDOFF.md
 
 | 平台 | runner（现有模板值） | Rust target | 包名 |
 | --- | --- | --- | --- |
-| Linux x64 | `ubuntu-24.04` | `x86_64-unknown-linux-gnu` | `aihmc-service-linux-x64.tar.gz` |
-| Linux ARM64 | `ubuntu-24.04-arm` | `aarch64-unknown-linux-gnu` | `aihmc-service-linux-arm64.tar.gz` |
+| Linux x64 | `ubuntu-24.04` | `x86_64-unknown-linux-musl` | `aihmc-service-linux-x64.tar.gz` |
+| Linux ARM64 | `ubuntu-24.04-arm` | `aarch64-unknown-linux-musl` | `aihmc-service-linux-arm64.tar.gz` |
 | Windows x64 | `windows-2022` | `x86_64-pc-windows-msvc` | `aihmc-service-windows-x64.zip` |
 
-实施时确认目标仓库可实际使用这些 runner。Linux GNU 构建记录所需 glibc 和动态库，不宣称为静态链接或兼容所有 Linux；依据实际依赖检查打包必需运行库。Windows 核验 MSVC 运行库需求。依赖使用现有 Rustls 方案时验证系统证书和真实 HTTPS，不关闭证书验证解决问题。
+用户在 R1 明确要求 Linux 直接使用 musl，两个 GNU target 均替换为上表 musl target；原生 runner 安装 musl-tools，C 依赖和链接使用 musl-gcc。Actions 用 readelf 核对架构、无 INTERP 和无 NEEDED 动态依赖，并实际运行解包产物。Windows 核验 MSVC 运行库需求。依赖使用现有 Rustls 方案时验证系统证书和真实 HTTPS，不关闭证书验证解决问题。
 
 流水线步骤：
 

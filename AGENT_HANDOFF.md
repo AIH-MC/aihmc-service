@@ -6,11 +6,13 @@ R0 自动验收通过：Go 1.26.4 Windows amd64 全量 go test -count=1 -p 1 -v 
 
 证据在 docs/RUST_MIGRATION_PROGRESS.md、docs/rust-r0-verification.json、docs/rust-go-baseline-manifest.json。Go 源基线 cc458ab7d709323bdf4b9ca6f7ac1c857c4cfa09；本地 .local/rust-migration/ 存放忽略的合成配置、密钥、日志及基线程序，秘密不得提交。
 
-分支 mc-auth 跟踪 origin/mc-auth；远端 https://github.com/AIH-MC/aihmc-service.git。已快进同步远端 846b467，新增的 rust.yml 手动工作流 checkout aihmc-auth 分支，保留该现有跨分支入口。当前待完成 R0 文档证据提交推送，确认后进入 R1。R1 至 R6 尚未完成。
+分支 mc-auth 跟踪 origin/mc-auth；远端 https://github.com/AIH-MC/aihmc-service.git。R0 已提交推送 25eb204 并核对。已有 rust.yml 手动工作流 checkout aihmc-auth 分支，保持原状。R1 本地验证完成，当前待提交推送并确认三平台 Actions，之后才能进入 R2。
 
 已知验证问题：沙箱限制导致本机数据库及回环 HTTP 失败，正常权限复验消失；Go 包并行写同一隔离库发生跨包死锁，-p 1 后通过，包内并发用例保留。没有修改 Go 源码。后续同库对照应串行。
 
-下一步 R1：在 rust/ 建立入口、TOML 配置、数据库连接、日志和生命周期；复用已有 Rust 1.95.0 与三平台矩阵，在 build.yml 接入 mc-auth Rust job。相邻 ../aihmc-auth-backend/ 可参考工具链和 CI 结构，不复制业务或运行配置；适配 aihmc-api 名称、移除 assets 硬编码、可靠传播 smoke 失败。
+R1 新增 rust/ 配置/CLI/数据库入口/日志/根路径/正常退出及 scripts/ci.ps1，build.yml 增加当前源码三平台。Linux 按用户最新要求直接用 musl（x86_64 / aarch64），原生 runner + musl-tools + musl-gcc，readelf 检查架构和无动态依赖。本地只构建 Windows。
+
+R1 fmt/Clippy/8项测试/release/打包解包/CLI冒烟通过；正式解包程序的真实隔离数据库检查、根路径GET/POST、端口冲突、数据库失败和 Ctrl+Break 优雅退出通过。证据见 docs/rust-r1-verification.json；本地运行验证脚本在 .local/rust-migration/r1-runtime-check.py。业务尚未迁移，阶段包不用于完整生产替换。R2 要完成六表及事务、查询超时和连接池空闲控制，R3 要补完整路由和HTTP读写时限，R4 材质和删除，随后归档交付。
 
 禁止扩大范围、安装数据库服务器或重构旧 Go。所有构建测试打包前台 PowerShell 经 Tee-Object 保存 build.log 并立即检查退出码；无输出命令前清空日志，避免残留上一条输出。每阶段更新记录、审查差异、提交推送确认后才进入下一阶段。Qt 验证仅限真实 Windows 窗口。任务最终完成需再更新本手册。
 

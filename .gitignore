@@ -1,6 +1,8 @@
 # Local configuration, credentials, and runtime data
 config.toml
 config.toml.*
+!.cargo/config.toml
+!rust/.cargo/config.toml
 config.php
 db.sql
 keys/
@@ -12,6 +14,8 @@ build.log
 *.exe
 *.test
 coverage.out
+target/
+test-output/
 dist/
 aihmc-service-linux-amd64.tar.gz
 aihmc-service-linux-amd64.tar.gz.sha256

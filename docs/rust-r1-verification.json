@@ -1,0 +1,58 @@
+{
+  "linux_targets": [
+    "x86_64-unknown-linux-musl",
+    "aarch64-unknown-linux-musl"
+  ],
+  "local_target": "x86_64-pc-windows-msvc",
+  "clippy": "PASS",
+  "logs": [
+    {
+      "log": "clippy.log",
+      "sha256": "fad8377bd2908b452aaac84533f8b7c26a5843bf3f418cd45abb203283c4a30d"
+    },
+    {
+      "log": "format.log",
+      "sha256": "7eb70257593da06f682a3ddda54a9d260d4fc514f645237f5ca74b08f8da61a6"
+    },
+    {
+      "log": "package.log",
+      "sha256": "7eb70257593da06f682a3ddda54a9d260d4fc514f645237f5ca74b08f8da61a6"
+    },
+    {
+      "log": "release.log",
+      "sha256": "656294e5c6c4b48b59ae152d5a62b50ee108b0caf47e5eb00df5d0b165d1d2af"
+    },
+    {
+      "log": "smoke.log",
+      "sha256": "bb5c5248bde31e263b942c959d2479087f6967212d55b51ef4812cd994121821"
+    },
+    {
+      "log": "test.log",
+      "sha256": "e4a75fc80da4dcd386ac7f21e5cb82d3a908dec6827f0ee57afad75c5ffa12f8"
+    }
+  ],
+  "date": "2026-11-14",
+  "package_smoke": "PASS",
+  "release_build": "PASS",
+  "fmt": "PASS",
+  "tests": {
+    "ignored": 0,
+    "failed": 0,
+    "passed": 8
+  },
+  "runtime": {
+    "platform": "windows-x64",
+    "binary": "unpacked release package",
+    "check_config_existing_database": "PASS",
+    "http_get_and_post_root": "PASS",
+    "listen_conflict": "PASS",
+    "graceful_console_break": "PASS",
+    "unavailable_database": "PASS",
+    "database": "aihmc_migration_test",
+    "business_paths": "not implemented in R1"
+  },
+  "remote_actions": "PENDING first stage push",
+  "package_sha256": "5810def4fbf27407ac3c3938de0fc9f177ae482a27cd59752aa728bc137cc636",
+  "stage": "R1",
+  "toolchain": "1.95.0"
+}

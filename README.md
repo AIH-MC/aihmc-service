@@ -2,6 +2,8 @@
 
 使用 Go 承载原 PHP 的 Minecraft 外置登录、UCenter 用户对接、会话验证、材质和头像接口。复用现有 MySQL/MariaDB 表、用户身份、令牌和 RSA 密钥，应用配置使用 TOML。
 
+Rust 迁移已启动，计划见 [Rust 迁移计划](RUST_MIGRATION_PLAN.md)，阶段验证和提交记录见 [Rust 实施记录](docs/RUST_MIGRATION_PROGRESS.md)。迁移期间 `rust/` 中的构建为阶段验证产物，根目录 Go 仍为完整服务；本地仅验证 Windows，Linux x64/ARM64 在 Actions 验证。
+
 当前迁移进度、验收证据与待完成事项见 [迁移计划](GO_MIGRATION_PLAN.md) 和 [实施记录](docs/MIGRATION_PROGRESS.md)。需要账号的真实用户和客户端联调按用户要求作为非阻塞人工验收 `MANUAL/PENDING`；M6 生产切换已按用户确认转为非阻塞人工交接。Go 模块位于仓库根目录，旧 PHP 源码保存在 `archive/php/`。
 
 ## 配置与运行
