@@ -1,4 +1,11 @@
+pub mod auth;
 pub mod config;
+pub mod db;
+pub mod error;
+pub mod figura;
 pub mod http;
+pub mod offline;
+pub mod profile;
 pub mod state;
+pub mod upstream;
 pub mod utils;

@@ -1,15 +1,14 @@
 # Agent Handoff
 
-- 目标：按 RUST_MIGRATION_PLAN.md 迁移 Rust，每阶段完成提交推送。
-- 阶段 1 已推送：a78a388；Windows Python 参考测试 18 项通过，包含真实 HTTP 与现有 MariaDB 隔离库。
-- 阶段 2 已完成：Cargo、TOML、基础 HTTP/Token、算法、共享客户端和池、三平台手动工作流、打包冒烟脚本。
-- 验证：Rust 1.95.0 Windows x64；fmt、Clippy -D warnings、5 测试、release 编译和 ZIP 解压真实 HTTP 冒烟全部通过；日志 test-output/logs/。
-- 依赖：axum 0.8.9、sqlx 0.9.0、reqwest 0.13.5、tokio 1.54.1、toml 1.2.1；Cargo.lock 固定解析。
-- CI：仅 workflow_dispatch，三个原生 runner；工作流/PowerShell 静态检查通过，未执行 Actions。
-- 当前分支 aihmc-auth；阶段 2 记录更新后提交推送，实际结果见 Git。
-- 下一步：阶段 3 迁移认证/账户/Figura/资料并执行 Windows 隔离库 HTTP 集成测试。
-- 用户要求：配置改 TOML；完成后原 Python 归档 legacy/python/；本地仅 Windows x64；禁止运行 Actions。
-- 本地 config.yml 已由用户配置且忽略，不能提交/输出凭据。Rust config.toml 同样忽略。
-- 已证实基线差异：见 docs/PYTHON_BASELINE.md；Python 参考环境与原依赖差异已记录，不冒充原环境完全通过。
-- 未验证：完整 Rust 业务、Linux、真实插件/上游；人工项 MANUAL/PENDING，Actions NOT RUN。
-- 保留现有 MySQL 实例，只使用随机测试库；遵守前台构建测试日志及阶段检查点，不扩大业务范围。
+- 目标：按 RUST_MIGRATION_PLAN.md 迁移 Rust，每阶段提交推送。
+- 已推送：阶段 1 a78a388；阶段 2 df3da75。
+- 阶段 3 已完成：多源认证、账户、Figura、资料；准备阶段检查点提交推送。
+- 验证：Windows Rust 1.95；fmt、Clippy、6 单元、release 打包解压 HTTP 冒烟、6 release 真实 HTTP/MariaDB 隔离库集成通过。
+- 测试证据：test-output/logs/integration-stage3.log、test.log、release.log、smoke.log；测试数据库与服务已清理。
+- 兼容：新旧 bcrypt 双向验密，来源顺序/禁用、签名、资料关联、会话；原 HTTP 400 关联副作用和带 IP 查询拼接等按基线保留，参见 docs/PYTHON_BASELINE.md。
+- 下一步：阶段 4 皮肤/材质/头像，随后阶段 5 完整回归、文档端点、Python 归档和部署文档。
+- 用户要求：Rust TOML；最终原 Python 归档 legacy/python/；本地仅 Windows x64；Actions 仅手动且不运行。
+- 分支 aihmc-auth，origin AIH-MC/aihmc-service；提交推送结果以实际 Git 为准。
+- 本地忽略的 config.yml 可连接现有 MariaDB，绝不输出/提交凭据；config.toml 同样忽略。
+- 未验证：Linux/Actions（NOT RUN）、真实插件/账号（MANUAL/PENDING），不作为等待阻塞。
+- 不扩大业务范围；数据库错误/无界重试等原行为未顺带改造；所有构建测试前台 Tee-Object 日志。

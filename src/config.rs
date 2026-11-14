@@ -34,12 +34,14 @@ pub struct Source {
     pub name: String,
     pub root_url: String,
     pub api_type: String,
-    #[serde(default = "enabled")]
-    pub enabled: bool,
+    #[serde(default)]
+    pub enabled: Option<bool>,
 }
 
-fn enabled() -> bool {
-    true
+impl Source {
+    pub fn is_enabled(&self) -> bool {
+        self.enabled.unwrap_or(true)
+    }
 }
 
 #[derive(Clone, Deserialize)]
